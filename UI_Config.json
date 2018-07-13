@@ -1,0 +1,55 @@
+﻿{
+    "Current": {
+        "group": "Core", 
+        "label": "Current Value", 
+        "tooltip": "Set the current value of the goal", 
+        "type": "numberbox", 
+        "value": 0
+    }, 
+    "CurrentUpdate": {
+        "group": "Core", 
+        "label": "Update Current Value", 
+        "tooltip": "Updates the current value if checked", 
+        "type": "checkbox", 
+        "value": false
+    }, 
+    "Goal": {
+        "group": "Core", 
+        "label": "Total Goal", 
+        "tooltip": "Donation Goal", 
+        "type": "numberbox", 
+        "value": 500
+    }, 
+    "Title": {
+        "group": "Core", 
+        "label": "Donation Title", 
+        "tooltip": "Title for the progress bar", 
+        "type": "textbox", 
+        "value": "test2s"
+    }, 
+    "btnCopyPath": {
+        "function": "CopyHtmlPath", 
+        "group": "Core", 
+        "label": "Copy HTML Path", 
+        "tooltip": "Copies the path to the html file to the clipboard", 
+        "type": "button", 
+        "wsevent": "EVENT_NONE"
+    }, 
+    "btnTestBits": {
+        "function": "TestBits", 
+        "group": "Tests", 
+        "label": "Test bits", 
+        "tooltip": "Sends fake cheer event to test progress bar", 
+        "type": "button", 
+        "wsevent": "EVENT_NONE"
+    }, 
+    "btnTestDonation": {
+        "function": "TestDonation", 
+        "group": "Tests", 
+        "label": "Test Donation", 
+        "tooltip": "Sends fake donation event to test progress bar", 
+        "type": "button", 
+        "wsevent": "EVENT_NONE"
+    }, 
+    "output_file": "Settings/settings.json"
+}

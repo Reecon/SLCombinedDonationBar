@@ -1,0 +1,107 @@
+<html>
+<meta charset="UTF-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="API_Key.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<body>
+  <div id="app">
+    <div class="progress">
+      <div class="progress-bar" role="progressbar" v-bind:aria-valuenow="calcProgress" aria-valuemin="0" aria-valuemax="100" v-bind:style="{width:calcProgress + '%'}">
+          <span class="current">{{ current }}</span><span class="title">{{ title }}</span><span class="percent">{{ calcProgress }}%</span><span class="goal">{{ goal }}</span>
+      </div>
+    </div>
+    <div v-html="my_event"></div>
+  </div>
+</body>
+
+
+<script>
+  var vm = new Vue({
+    el: '#app',
+    data: {
+      goal: 100,
+      current: 100,
+      title: "This is only a test!",
+      my_event: "",
+      serviceUrl: "",
+      socket: Object
+    },
+    computed: {
+      calcProgress: function() {
+        return Math.floor((this.current / this.goal) * 100);
+      }
+    },
+    mounted: function () {
+      //---------------------------------
+      //  Variables
+      //---------------------------------
+      this.serviceUrl = API_Socket;
+      this.socket = new WebSocket(this.serviceUrl);
+
+      //---------------------------------
+      //  Open Event
+      //---------------------------------
+      this.socket.onopen = function () {
+        // Format your Authentication Information
+        var auth = {
+          author: 'Reecon820',
+          website: 'reecon820@gmail.com',
+          api_key: API_Key,
+          events: ['EVENT_BAR_UPDATE', 'EVENT_CHEER', 'EVENT_DONATION']
+        };
+        //  Send your Data to the server
+        vm.socket.send(JSON.stringify(auth));
+      };
+
+      //---------------------------------
+      //  Error Event
+      //---------------------------------
+      this.socket.onerror = function (error) {
+        //  Something went terribly wrong... Respond?!
+        console.log('Error: ' + error);
+      };
+
+      //---------------------------------
+      //  Message Event
+      //---------------------------------
+      this.socket.onmessage = function (message) {
+        var json = JSON.parse(message.data);
+        
+        if (json.event === 'EVENT_BAR_UPDATE') {
+          var data = JSON.parse(json.data);
+          
+          if (data.currentUpdate) {
+            vm.current = parseFloat(data.current);
+          }
+          vm.title = data.title;
+          vm.goal = parseFloat(data.goal);
+
+        } else if (json.event === 'EVENT_CHEER') {
+          var data = JSON.parse(json.data);
+          
+          var value = data.bits/100;
+          
+          vm.current += value;
+          vm.current = parseFloat(vm.current.toFixed(2));
+
+        } else if (json.event === 'EVENT_DONATION') {
+          var data = JSON.parse(json.data);
+          
+          vm.current += parseFloat(data.amount);
+          vm.current = parseFloat(vm.current.toFixed(2));
+        }
+      };
+      
+      //---------------------------------
+      //  Message Event
+      //---------------------------------
+      this.socket.onclose = function () {
+        //  Connection has been closed by you or the server
+        console.log("Connection Closed!");
+      };
+    }
+  });
+</script>
+
+</html>
