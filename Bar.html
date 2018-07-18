@@ -39,6 +39,18 @@
       this.serviceUrl = API_Socket;
       this.socket = new WebSocket(this.serviceUrl);
 
+      if (localStorage.getItem('current')) {
+        this.current = parseFloat(localStorage.getItem('current'));
+      }
+
+      if (localStorage.getItem('title')) {
+        this.title = localStorage.getItem('title');
+      }
+
+      if (localStorage.getItem('goal')) {
+        this.goal = parseFloat(localStorage.getItem('goal'));
+      }
+
       //---------------------------------
       //  Open Event
       //---------------------------------
@@ -73,9 +85,13 @@
           
           if (data.currentUpdate) {
             vm.current = parseFloat(data.current);
+            localStorage.setItem('current', vm.current);
           }
           vm.title = data.title;
           vm.goal = parseFloat(data.goal);
+
+          localStorage.setItem('title', vm.title);
+          localStorage.setItem('goal', vm.goal);
 
         } else if (json.event === 'EVENT_CHEER') {
           var data = JSON.parse(json.data);
@@ -84,12 +100,20 @@
           
           vm.current += value;
           vm.current = parseFloat(vm.current.toFixed(2));
+          
+          if (data.name !== "test") {
+            localStorage.setItem('current', vm.current);
+          }
 
         } else if (json.event === 'EVENT_DONATION') {
           var data = JSON.parse(json.data);
           
           vm.current += parseFloat(data.amount);
           vm.current = parseFloat(vm.current.toFixed(2));
+
+          if (data.name !== 'tester') {
+            localStorage.setItem('current', vm.current);
+          }
         }
       };
       

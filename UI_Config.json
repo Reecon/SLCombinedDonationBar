@@ -11,21 +11,21 @@
         "label": "Update Current Value", 
         "tooltip": "Updates the current value if checked", 
         "type": "checkbox", 
-        "value": false
+        "value": true
     }, 
     "Goal": {
         "group": "Core", 
         "label": "Total Goal", 
         "tooltip": "Donation Goal", 
         "type": "numberbox", 
-        "value": 500
+        "value": 505
     }, 
     "Title": {
         "group": "Core", 
         "label": "Donation Title", 
         "tooltip": "Title for the progress bar", 
         "type": "textbox", 
-        "value": "test2s"
+        "value": "Super Duper Mega Goal blub"
     }, 
     "btnCopyPath": {
         "function": "CopyHtmlPath", 

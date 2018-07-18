@@ -7,10 +7,6 @@ import sys
 import json
 sys.path.append(os.path.join(os.path.dirname(__file__), "lib")) #point at lib folder for classes / references
 
-import clr
-clr.AddReference("IronPython.SQLite.dll")
-clr.AddReference("IronPython.Modules.dll")
-
 #   Import your Settings class
 from Settings_Module import MySettings
 #---------------------------
@@ -20,7 +16,7 @@ ScriptName = "CombinedProgressBar"
 Website = "reecon820@gmail.com"
 Description = "Progress bar for goals that combines streamlabs donations and cheers."
 Creator = "Reecon820"
-Version = "0.0.1.0"
+Version = "0.2.0.0"
 
 #---------------------------
 #   Define Global Variables
@@ -37,7 +33,6 @@ BarHtmlPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "Bar.html"
 #   [Required] Initialize Data (Only called on load)
 #---------------------------
 def Init():
-
     #   Create Settings Directory
     directory = os.path.join(os.path.dirname(__file__), "Settings")
     if not os.path.exists(directory):
@@ -55,19 +50,19 @@ def Init():
         with codecs.open(UiFilePath, encoding="utf-8-sig", mode="r") as f:
             ui = json.load(f, encoding="utf-8")
     except Exception as err:
-        Parent.Log(ScriptName, "{0}".format(err))
+        Parent.Log(ScriptName, "Error reading UI file: {0}".format(err))
 
     # update ui with loaded settings
     ui['Title']['value'] = ScriptSettings.Title
     ui['Goal']['value'] = ScriptSettings.Goal
     ui['Current']['value'] = ScriptSettings.Current
     ui['CurrentUpdate']['value'] = ScriptSettings.CurrentUpdate
-
+    
     try:
         with codecs.open(UiFilePath, encoding="utf-8-sig", mode="w+") as f:
             json.dump(ui, f, encoding="utf-8", indent=4, sort_keys=True)
     except Exception as err:
-        Parent.Log(ScriptName, "{0}".format(err))
+        Parent.Log(ScriptName, "Error saving UI file: {0}".format(err))
 
     return
 
@@ -97,11 +92,13 @@ def ReloadSettings(jsonData):
     # Execute json reloading here
     ScriptSettings.Reload(jsonData)
     ScriptSettings.Save(SettingsFile)
+
     # update overlay
     currentUpdate = "{0}".format(ScriptSettings.CurrentUpdate)
     currentUpdate = currentUpdate.lower() 
     data = '{{"title": "{0}", "goal": "{1}", "current": "{2}", "currentUpdate": {3} }}'.format(ScriptSettings.Title, ScriptSettings.Goal, ScriptSettings.Current, currentUpdate)
     Parent.BroadcastWsEvent("EVENT_BAR_UPDATE", data)
+
     return
 
 #---------------------------
