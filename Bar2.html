@@ -1,0 +1,160 @@
+<html>
+<meta charset="UTF-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js'></script>
+<script src="API_Key.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<body>
+  <div id="app">
+    <div class="progress">
+      <div class="progress-bar" role="progressbar" v-bind:aria-valuenow="calcProgress" aria-valuemin="0" aria-valuemax="100" v-bind:style="{width:calcProgress + '%'}">
+          <span class="current">{{ current }}</span><span class="title">{{ title }}</span><span class="percent">{{ calcProgress }}%</span><span class="goal">{{ goal }}</span>
+      </div>
+    </div>
+    <div v-html="my_event"></div>
+  </div>
+</body>
+
+
+<script>
+  var vm = new Vue({
+    el: '#app',
+    data: {
+      goal: 100,
+      current: 100,
+      title: "This is only a test!",
+      my_event: "",
+      serviceUrl: "",
+      socket: Object,
+      SLSocket: Object,
+      SLSocketToken: "_SECRET_API_TOKEN_",  //---------- Enter Streamlabs API token here -----------//
+    },
+    computed: {
+      calcProgress: function() {
+        return Math.floor((this.current / this.goal) * 100);
+      }
+    },
+    mounted: function () {
+      //---------------------------------
+      //  Variables
+      //---------------------------------
+      this.serviceUrl = API_Socket;
+      this.socket = new WebSocket(this.serviceUrl);
+
+      this.SLSocket = io(`https://sockets.streamlabs.com:443?token=${this.SLSocketToken}`, {transports: ['websocket']});
+
+      this.SLSocket.on('onconnect'), () => {
+				console.log("opened");
+			}; 
+      
+      this.SLSocket.on('event', (eventData) => {
+        
+        if (eventData.for === 'streamlabs') {
+          if (eventData.type === 'donation')  {
+
+            // Streamlabs Donation
+            console.log("donation",eventData.message);
+            
+            for (donation of eventData.message) {
+              vm.current += donation.amount;
+              vm.current = parseFloat(vm.current.toFixed(2));
+
+              if (!donation.isTest) {
+                localStorage.setItem('current', vm.current);
+              }
+            }
+            
+          }
+        }
+
+        if (eventData.for === 'twitch_account') {
+          if (eventData.type === 'bits') {
+
+            // Twitch bits
+            console.log("bits", eventData.message);
+
+            for (cheer of eventData.message) {
+              var value = parseInt(cheer.amount) / 100;
+              
+              vm.current += value;
+              vm.current = parseFloat(vm.current.toFixed(2));
+
+              if (!cheer.isTest) {
+                localStorage.setItem('current', vm.current);
+              }
+            }
+
+          }
+        }
+      });
+      if (localStorage.getItem('current')) {
+        this.current = parseFloat(localStorage.getItem('current'));
+      }
+
+      if (localStorage.getItem('title')) {
+        this.title = localStorage.getItem('title');
+      }
+
+      if (localStorage.getItem('goal')) {
+        this.goal = parseFloat(localStorage.getItem('goal'));
+      }
+
+      //---------------------------------
+      //  Open Event
+      //---------------------------------
+      this.socket.onopen = function () {
+        // Format your Authentication Information
+        var auth = {
+          author: 'Reecon820',
+          website: 'reecon820@gmail.com',
+          api_key: API_Key,
+          events: ['EVENT_BAR_UPDATE']
+        };
+        //  Send your Data to the server
+        vm.socket.send(JSON.stringify(auth));
+      };
+
+      //---------------------------------
+      //  Error Event
+      //---------------------------------
+      this.socket.onerror = function (error) {
+        //  Something went terribly wrong... Respond?!
+        console.log('Error: ' + error);
+      };
+
+      //---------------------------------
+      //  Message Event
+      //---------------------------------
+      this.socket.onmessage = function (message) {
+        var json = JSON.parse(message.data);
+        console.log(message);
+        
+        if (json.event === 'EVENT_BAR_UPDATE') {
+          var data = JSON.parse(json.data);
+          
+          if (data.currentUpdate) {
+            vm.current = parseFloat(data.current);
+            localStorage.setItem('current', vm.current);
+          }
+          vm.title = data.title;
+          vm.goal = parseFloat(data.goal);
+
+          localStorage.setItem('title', vm.title);
+          localStorage.setItem('goal', vm.goal);
+
+        }
+      };
+      
+      //---------------------------------
+      //  Message Event
+      //---------------------------------
+      this.socket.onclose = function () {
+        //  Connection has been closed by you or the server
+        console.log("Connection Closed!");
+      };
+    }
+  });
+</script>
+
+</html>
