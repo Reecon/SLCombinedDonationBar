@@ -43,6 +43,10 @@ body {
     border-radius: 20%;
 }
 
+div[is-full="true"] {
+    background: green;
+}
+
 .progress-bar {
     background: royalblue;
     transition: width 3s ease-out;
