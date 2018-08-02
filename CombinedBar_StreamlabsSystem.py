@@ -29,6 +29,9 @@ ScriptSettings = MySettings()
 global BarHtmlPath
 BarHtmlPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "Bar.html"))
 
+global Bar2HtmlPath
+Bar2HtmlPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "Bar2.html"))
+
 #---------------------------
 #   [Required] Initialize Data (Only called on load)
 #---------------------------
@@ -113,8 +116,13 @@ def Unload():
 def ScriptToggled(state):
     return
 
-def CopyHtmlPath():
+def CopyHtmlPath1():
     command = "echo " + BarHtmlPath + "| clip"
+    os.system(command)
+    return
+
+def CopyHtmlPath2():
+    command = "echo " + Bar2HtmlPath + "| clip"
     os.system(command)
     return
 
@@ -127,3 +135,4 @@ def TestDonation():
     data = '{"userId": "1234567", "name": "tester", "display_name": "Tester", "amount": "69.69", "currency": "USD", "message": "giggity" }'
     Parent.BroadcastWsEvent("EVENT_DONATION", data)
     return
+    

@@ -4,7 +4,7 @@
         "label": "Current Value", 
         "tooltip": "Set the current value of the goal", 
         "type": "numberbox", 
-        "value": 0
+        "value": 50
     }, 
     "CurrentUpdate": {
         "group": "Core", 
@@ -18,18 +18,26 @@
         "label": "Total Goal", 
         "tooltip": "Donation Goal", 
         "type": "numberbox", 
-        "value": 505
+        "value": 100
     }, 
     "Title": {
         "group": "Core", 
         "label": "Donation Title", 
         "tooltip": "Title for the progress bar", 
         "type": "textbox", 
-        "value": "Super Duper Mega Goal blub"
+        "value": "Super Duper Mega Goal"
     }, 
-    "btnCopyPath": {
-        "function": "CopyHtmlPath", 
-        "group": "Core", 
+    "btnCopyPath1": {
+        "function": "CopyHtmlPath1", 
+        "group": "Bar1", 
+        "label": "Copy HTML Path", 
+        "tooltip": "Copies the path to the html file to the clipboard", 
+        "type": "button", 
+        "wsevent": "EVENT_NONE"
+    }, 
+    "btnCopyPath2": {
+        "function": "CopyHtmlPath2", 
+        "group": "Bar2", 
         "label": "Copy HTML Path", 
         "tooltip": "Copies the path to the html file to the clipboard", 
         "type": "button", 
@@ -37,7 +45,7 @@
     }, 
     "btnTestBits": {
         "function": "TestBits", 
-        "group": "Tests", 
+        "group": "Bar1", 
         "label": "Test bits", 
         "tooltip": "Sends fake cheer event to test progress bar", 
         "type": "button", 
@@ -45,7 +53,7 @@
     }, 
     "btnTestDonation": {
         "function": "TestDonation", 
-        "group": "Tests", 
+        "group": "Bar1", 
         "label": "Test Donation", 
         "tooltip": "Sends fake donation event to test progress bar", 
         "type": "button", 
