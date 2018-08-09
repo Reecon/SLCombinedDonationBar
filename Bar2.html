@@ -55,7 +55,21 @@
 			}; 
       
       this.SLSocket.on('event', (eventData) => {
+        if (!eventData.for && eventData.type === 'donation') {
 
+          // Streamlabs Donation
+          console.log("donation",eventData.message);
+          
+          for (donation of eventData.message) {
+            vm.current += parseFloat(donation.amount);
+            vm.current = parseFloat(vm.current.toFixed(2));
+
+            if (!donation.isTest) {
+              localStorage.setItem('current', vm.current);
+            }
+          }
+            
+        }
         if (eventData.for === 'streamlabs') {
           if (eventData.type === 'donation')  {
 
