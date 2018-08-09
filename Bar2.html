@@ -28,7 +28,7 @@
       serviceUrl: "",
       socket: Object,
       SLSocket: Object,
-      SLSocketToken: "_SECRET_API_TOKEN_",  //---------- Enter Streamlabs API token here -----------//
+      SLSocketToken: "REPLACE_THIS_WITH_TOKEN",  // <--- Replace with Streamlabs API token ---//
     },
     computed: {
       calcProgress: function() {
@@ -55,7 +55,7 @@
 			}; 
       
       this.SLSocket.on('event', (eventData) => {
-        
+
         if (eventData.for === 'streamlabs') {
           if (eventData.type === 'donation')  {
 
@@ -63,7 +63,7 @@
             console.log("donation",eventData.message);
             
             for (donation of eventData.message) {
-              vm.current += donation.amount;
+              vm.current += parseFloat(donation.amount);
               vm.current = parseFloat(vm.current.toFixed(2));
 
               if (!donation.isTest) {
@@ -134,7 +134,6 @@
       //---------------------------------
       this.socket.onmessage = function (message) {
         var json = JSON.parse(message.data);
-        console.log(message);
         
         if (json.event === 'EVENT_BAR_UPDATE') {
           var data = JSON.parse(json.data);
