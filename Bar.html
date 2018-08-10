@@ -101,7 +101,12 @@
 
         } else if (json.event === 'EVENT_CHEER') {
           var data = JSON.parse(json.data);
-          
+
+          // if this is not a test read actual value from storage first
+          if (localStorage.getItem('current') && data.name !== "test") {
+            vm.current = parseFloat(localStorage.getItem('current'));
+          }
+
           var value = data.bits/100;
           
           vm.current += value;
@@ -113,7 +118,12 @@
 
         } else if (json.event === 'EVENT_DONATION') {
           var data = JSON.parse(json.data);
-          
+
+          // if this is not a test read actual value from storage first
+          if (localStorage.getItem('current') && data.name !== "tester") {
+            vm.current = parseFloat(localStorage.getItem('current'));
+          }
+
           vm.current += parseFloat(data.amount);
           vm.current = parseFloat(vm.current.toFixed(2));
 

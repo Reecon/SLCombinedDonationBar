@@ -61,6 +61,10 @@
           console.log("donation",eventData.message);
           
           for (donation of eventData.message) {
+            // if this is not a test read actual value from storage first
+            if (localStorage.getItem('current') && !donation.isTest) {
+              vm.current = parseFloat(localStorage.getItem('current'));
+            }
             vm.current += parseFloat(donation.amount);
             vm.current = parseFloat(vm.current.toFixed(2));
 
@@ -70,22 +74,25 @@
           }
             
         }
-        if (eventData.for === 'streamlabs') {
-          if (eventData.type === 'donation')  {
 
-            // Streamlabs Donation
-            console.log("donation",eventData.message);
-            
-            for (donation of eventData.message) {
-              vm.current += parseFloat(donation.amount);
-              vm.current = parseFloat(vm.current.toFixed(2));
+        if (eventData.for === 'streamlabs' && eventData.type === 'donation')  {
 
-              if (!donation.isTest) {
-                localStorage.setItem('current', vm.current);
-              }
+          // Streamlabs Donation
+          console.log("donation",eventData.message);
+          
+          for (donation of eventData.message) {
+            // if this is not a test read actual value from storage first
+            if (localStorage.getItem('current') && !donation.isTest) {
+              vm.current = parseFloat(localStorage.getItem('current'));
             }
-            
+            vm.current += parseFloat(donation.amount);
+            vm.current = parseFloat(vm.current.toFixed(2));
+
+            if (!donation.isTest) {
+              localStorage.setItem('current', vm.current);
+            }
           }
+          
         }
 
         if (eventData.for === 'twitch_account') {
@@ -95,6 +102,10 @@
             console.log("bits", eventData.message);
 
             for (cheer of eventData.message) {
+              // if this is not a test read actual value from storage first
+              if (localStorage.getItem('current') && !cheer.isTest) {
+                vm.current = parseFloat(localStorage.getItem('current'));
+              }
               var value = parseInt(cheer.amount) / 100;
               
               vm.current += value;
@@ -108,6 +119,7 @@
           }
         }
       });
+
       if (localStorage.getItem('current')) {
         this.current = parseFloat(localStorage.getItem('current'));
       }
