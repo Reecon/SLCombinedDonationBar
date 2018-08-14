@@ -12,6 +12,8 @@ class MySettings(object):
 			self.Goal = 0
 			self.Current = 0
 			self.CurrentUpdate = False
+			self.addToList = False
+			self.CycleTime = 30
 
 	def Reload(self, jsondata):
 		self.__dict__ = json.loads(jsondata, encoding="utf-8")

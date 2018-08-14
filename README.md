@@ -1,6 +1,8 @@
+# Combined Donation Bar
+
 Progress bar for goals that combines streamlabs donations and cheers.
 
-### Installation
+## Installation
 
 * Download zip
 * Import zip into bot
@@ -10,13 +12,43 @@ Progress bar for goals that combines streamlabs donations and cheers.
 There are two goal bar overlays. The first, `Bar.html` uses the bot's event-system to react to cheers and donations. In order to be able to receive donation events the bot must be connected to Streamlabs in the `Connections`-panel in lower left corner of the bot-ui.
 
 The second option, `Bar2.html` directly connects to the Streamlabs API. To use this, you have to do the following:
+
 * Open `Bar2.html` in a text editor
 * Go to the Streamlabs website and navigate to `API Settings`. Select `API TOKENS` and copy `Your Socket API Token`.
 * In the text editor go to line 31 and replace `_SECRET_API_TOKEN_` with your API token.
 * Save the file and edit the path to your browser source so it points to `Bar2.html` instead of `Bar.html`
 
+## Goal List
 
-### Styling
+In order to keep maintainance low during streams, you can set up a list of goals which will automatically be cycled once the current goal is reached.
+You can set a timer for how long the completed goal should stay before the switch occurs.
+
+### Setting Up Multiple Goals
+
+After you entered the data for a new goal, you can select the checkbox under the section `Goal List` to add the new goal at the end of the list.
+When you save the settings, the new goal will be added and sent to the overlay.
+
+You can set up as many goals as you want. To edit the file directly, click on the `Open List File` button.
+
+__Note:__ Make sure that the `Update Current Value` checkbox is not active!
+
+### Updating Goals
+
+You can change the total and current amount of an existing goal by typing the goal title into the `Goal Title` field. If a goal with this title already exists,
+the values for total and current amount will be saved for that goal.
+
+__Note:__ The checkbox in the `Goal List` section must be active!
+
+### Deleting Goals From The List
+
+You can delete goals by typing the title of the goal you want to delete into the `Goal Title` field and set the `Total Amount` to `0`.
+
+__Note:__ The checkbox in the `Goal List` section must be active!
+
+__Note:__ Completed goals will __not__ be removed from the file automatically!
+
+## Styling
+
 Based on Bootstrap CSS progress bars, the CSS classes for customization are:
 
 ```

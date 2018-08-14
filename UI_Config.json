@@ -4,7 +4,7 @@
         "label": "Current Value", 
         "tooltip": "Set the current value of the goal", 
         "type": "numberbox", 
-        "value": 50
+        "value": 0
     }, 
     "CurrentUpdate": {
         "group": "Core", 
@@ -13,19 +13,33 @@
         "type": "checkbox", 
         "value": true
     }, 
+    "CycleTime": {
+        "group": "Goal List", 
+        "label": "Goal Cycle Time", 
+        "tooltip": "Time in seconds until the goals are switched after the current one is completed", 
+        "type": "numberbox", 
+        "value": 5
+    }, 
     "Goal": {
         "group": "Core", 
         "label": "Total Goal", 
         "tooltip": "Donation Goal", 
         "type": "numberbox", 
-        "value": 100
+        "value": 200.0
     }, 
     "Title": {
         "group": "Core", 
-        "label": "Donation Title", 
-        "tooltip": "Title for the progress bar", 
+        "label": "Goal Title", 
+        "tooltip": "Title of the goal. Updates goal with [Order] if empty", 
         "type": "textbox", 
-        "value": "Super Duper Mega Goal"
+        "value": "test goal 1"
+    }, 
+    "addToList": {
+        "group": "Goal List", 
+        "label": "Add or update this goal?", 
+        "tooltip": "Check to add this goal to the list instead of putting it as the current goal. Or update / delete an existing goal", 
+        "type": "checkbox", 
+        "value": false
     }, 
     "btnCopyPath1": {
         "function": "CopyHtmlPath1", 
@@ -40,6 +54,14 @@
         "group": "Bar2", 
         "label": "Copy HTML Path", 
         "tooltip": "Copies the path to the html file to the clipboard", 
+        "type": "button", 
+        "wsevent": "EVENT_NONE"
+    }, 
+    "btnEditList": {
+        "function": "OpenListFile", 
+        "group": "Goal List", 
+        "label": "Open List File", 
+        "tooltip": "Open the goal list file for editing", 
         "type": "button", 
         "wsevent": "EVENT_NONE"
     }, 

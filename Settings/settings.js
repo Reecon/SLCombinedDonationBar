@@ -1,1 +1,1 @@
-﻿var settings = {"Current": 0, "Goal": 505, "CurrentUpdate": true, "Title": "Super Duper Mega Goal"};
+﻿var settings = {"Current": 0, "CycleTime": 10, "Goal": 200, "CurrentUpdate": true, "addToList": false, "Title": "test goal 4"};
