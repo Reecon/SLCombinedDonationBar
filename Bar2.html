@@ -73,6 +73,7 @@
           localStorage.setItem('goal', vm.goal);
 
           vm.current = overflow + newGoal.current;
+          vm.current = parseFloat(vm.current.toFixed(2));
           localStorage.setItem('current', vm.current);
         }
       }
