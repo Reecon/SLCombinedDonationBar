@@ -16,7 +16,7 @@ ScriptName = "CombinedProgressBar"
 Website = "reecon820@gmail.com"
 Description = "Progress bar for goals that combines streamlabs donations and cheers."
 Creator = "Reecon820"
-Version = "0.3.0.1"
+Version = "0.3.0.2"
 
 #---------------------------
 #   Define Global Variables
@@ -67,6 +67,7 @@ def Init():
         ScriptSettings.Title = goals["goals"][0]["title"]
         ScriptSettings.Goal = goals["goals"][0]["goal"]
         ScriptSettings.Current = goals["goals"][0]["current"]
+        ScriptSettings.Save(SettingsFile)
     # update ui with loaded settings
     ui['Title']['value'] = ScriptSettings.Title
     ui['Goal']['value'] = ScriptSettings.Goal
@@ -74,7 +75,7 @@ def Init():
     ui['CurrentUpdate']['value'] = ScriptSettings.CurrentUpdate
     ui['addToList']['value'] = ScriptSettings.addToList
     ui['CycleTime']['value'] = ScriptSettings.CycleTime
-    
+
     try:
         with codecs.open(UiFilePath, encoding="utf-8-sig", mode="w+") as f:
             json.dump(ui, f, encoding="utf-8", indent=4, sort_keys=True)
