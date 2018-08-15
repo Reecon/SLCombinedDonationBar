@@ -23,19 +23,56 @@
       goal: 100,
       current: 100,
       title: "This is only a test!",
+      goalQueue: [],
+      cycleTime: 30,
+      full: true,
       my_event: "",
       serviceUrl: "",
       socket: Object
+    },
+    watch: {
+      full: function(newFull, oldFull) {
+        console.log("switching goal", this.full, newFull, oldFull);
+        if (newFull) {
+          // start timer
+          var timer = window.setTimeout(this.switchGoal, this.cycleTime * 1000);
+        }
+      }
     },
     computed: {
       calcProgress: function() {
         return Math.floor((this.current / this.goal) * 100);
       },
       isFull: function() {
-        return (this.current / this.goal) >= 1;
+        this.full = (this.current / this.goal) >= 1;
+        return this.full;
       },
       calcWidth: function() {
         return (this.current / this.goal) >= 1 ? {width: 100+'%'}: {width: Math.floor((this.current / this.goal) * 100) + '%'}
+      }
+    },
+    methods: {
+      switchGoal: () => {
+        console.log("goal queue", vm.goalQueue);
+        if (vm.goalQueue.length > 0) {
+          // save overflow
+          var overflow = vm.current - vm.goal;
+
+          // update current with new values
+          var newGoal = vm.goalQueue[0];
+          vm.goalQueue = vm.goalQueue.splice(1);
+          localStorage.setItem('goalQueue', JSON.stringify(vm.goalQueue));
+
+          vm.title = newGoal.title;
+          localStorage.setItem('title', vm.title);
+
+          vm.goal = newGoal.goal;
+          localStorage.setItem('goal', vm.goal);
+
+          vm.current = overflow + newGoal.current;
+          vm.current = parseFloat(vm.current.toFixed(2));
+          localStorage.setItem('current', vm.current);
+        }
       }
     },
     mounted: function () {
@@ -57,6 +94,15 @@
         this.goal = parseFloat(localStorage.getItem('goal'));
       }
 
+      if (localStorage.getItem('cycleTime')) {
+        this.cycleTime = parseInt(localStorage.getItem('cycleTime'));
+      }
+
+      if (localStorage.getItem('goalQueue')) {
+        this.goalQueue = JSON.parse(localStorage.getItem('goalQueue'));
+      }
+
+      console.log('queue', this.goalQueue);
       //---------------------------------
       //  Open Event
       //---------------------------------
@@ -88,16 +134,22 @@
         
         if (json.event === 'EVENT_BAR_UPDATE') {
           var data = JSON.parse(json.data);
+          console.log("data", data);
+          var firstGoal = data.goals[0];
+          vm.goalQueue = data.goals.slice(1);
+          vm.cycleTime = data.cycleTime;
           
           if (data.currentUpdate) {
-            vm.current = parseFloat(data.current);
+            vm.current = parseFloat(firstGoal.current);
             localStorage.setItem('current', vm.current);
           }
-          vm.title = data.title;
-          vm.goal = parseFloat(data.goal);
+          vm.title = firstGoal.title;
+          vm.goal = parseFloat(firstGoal.goal);
 
           localStorage.setItem('title', vm.title);
           localStorage.setItem('goal', vm.goal);
+          localStorage.setItem('cycleTime', vm.cycleTime);
+          localStorage.setItem('goalQueue', JSON.stringify(vm.goalQueue));
 
         } else if (json.event === 'EVENT_CHEER') {
           var data = JSON.parse(json.data);

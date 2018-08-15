@@ -16,7 +16,7 @@ ScriptName = "CombinedProgressBar"
 Website = "reecon820@gmail.com"
 Description = "Progress bar for goals that combines streamlabs donations and cheers."
 Creator = "Reecon820"
-Version = "0.3.0.3"
+Version = "0.3.1.0"
 
 #---------------------------
 #   Define Global Variables
