@@ -30,7 +30,7 @@ When you save the settings, the new goal will be added and sent to the overlay.
 
 You can set up as many goals as you want. To edit the file directly, click on the `Open List File` button.
 
-__Note:__ Make sure that the `Update Current Value` checkbox is not active!
+__Note:__ Adding the goal to the list takes priority over updating the current goal.
 
 ### Updating Goals
 

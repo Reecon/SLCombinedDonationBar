@@ -16,7 +16,7 @@ ScriptName = "CombinedProgressBar"
 Website = "reecon820@gmail.com"
 Description = "Progress bar for goals that combines streamlabs donations and cheers."
 Creator = "Reecon820"
-Version = "0.3.0.2"
+Version = "0.3.0.3"
 
 #---------------------------
 #   Define Global Variables
@@ -122,6 +122,11 @@ def ReloadSettings(jsonData):
     # update overlay
     currentUpdate = "{0}".format(ScriptSettings.CurrentUpdate)
     currentUpdate = currentUpdate.lower() 
+
+    # adding goals to the list takes priority over updating the current goal
+    if jsonObject['addToList']:
+        currentUpdate = 'false'
+    
     newGoals = dict(goals)
     newGoals['currentUpdate'] = currentUpdate
     newGoals['cycleTime'] = jsonObject['CycleTime']
