@@ -23,6 +23,10 @@ The second option, `Bar2.html` directly connects to the Streamlabs API. To use t
 In order to keep maintainance low during streams, you can set up a list of goals which will automatically be cycled once the current goal is reached.
 You can set a timer for how long the completed goal should stay before the switch occurs.
 
+Amounts exceeding the current goal will be carried over to the new goal, including new donations that happen during the time between completion and switch.
+
+The last goal in the list will stay on screen after completion.
+
 ### Setting Up Multiple Goals
 
 After you entered the data for a new goal, you can select the checkbox under the section `Goal List` to add the new goal at the end of the list.
