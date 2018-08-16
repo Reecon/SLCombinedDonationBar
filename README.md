@@ -27,12 +27,14 @@ Amounts exceeding the current goal will be carried over to the new goal, includi
 
 The last goal in the list will stay on screen after completion.
 
+__Note:__ The browser source must be active, meaning the streaming software must be running and the source must be loaded, to make any changes to the goal list!
+
 ### Setting Up Multiple Goals
 
 After you entered the data for a new goal, you can select the checkbox under the section `Goal List` to add the new goal at the end of the list.
 When you save the settings, the new goal will be added and sent to the overlay.
 
-You can set up as many goals as you want. To edit the file directly, click on the `Open List File` button.
+You can set up as many goals as you want.
 
 __Note:__ Adding the goal to the list takes priority over updating the current goal.
 
@@ -48,8 +50,6 @@ __Note:__ The checkbox in the `Goal List` section must be active!
 You can delete goals by typing the title of the goal you want to delete into the `Goal Title` field and set the `Total Amount` to `0`.
 
 __Note:__ The checkbox in the `Goal List` section must be active!
-
-__Note:__ Completed goals will __not__ be removed from the file automatically!
 
 ## Styling
 

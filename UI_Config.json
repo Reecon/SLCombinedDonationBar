@@ -4,7 +4,7 @@
         "label": "Current Value", 
         "tooltip": "Set the current value of the goal", 
         "type": "numberbox", 
-        "value": 0
+        "value": 33
     }, 
     "CurrentUpdate": {
         "group": "Core", 
@@ -25,7 +25,7 @@
         "label": "Total Goal", 
         "tooltip": "Donation Goal", 
         "type": "numberbox", 
-        "value": 200.0
+        "value": 200
     }, 
     "Title": {
         "group": "Core", 
@@ -54,14 +54,6 @@
         "group": "Bar2", 
         "label": "Copy HTML Path", 
         "tooltip": "Copies the path to the html file to the clipboard", 
-        "type": "button", 
-        "wsevent": "EVENT_NONE"
-    }, 
-    "btnEditList": {
-        "function": "OpenListFile", 
-        "group": "Goal List", 
-        "label": "Open List File", 
-        "tooltip": "Open the goal list file for editing", 
         "type": "button", 
         "wsevent": "EVENT_NONE"
     }, 
