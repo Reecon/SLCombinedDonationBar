@@ -27,11 +27,13 @@
       goalQueue: [],
       cycleTime: 30,
       full: true,
+      listDone: false,
+      lastEvent: {},
       my_event: "",
       serviceUrl: "",
       socket: Object,
       SLSocket: Object,
-      SLSocketToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbiI6IjY1ODcwOUNGQTUyNjk0N0M2QkY2IiwicmVhZF9vbmx5Ijp0cnVlLCJwcmV2ZW50X21hc3RlciI6dHJ1ZSwidHdpdGNoX2lkIjoiNDA1ODcxNDgifQ.bzlW1GlVETDSvzC1grAuPV3lKtwrvkBgvyPmza7DVUk",  // <--- Replace with Streamlabs API token ---//
+      SLSocketToken: "REPLACE_THIS_WITH_TOKEN",  // <--- Replace with Streamlabs API token ---//
     },
     watch: {
       full: function(newFull, oldFull) {
@@ -75,7 +77,20 @@
           vm.current = overflow + newGoal.current;
           vm.current = parseFloat(vm.current.toFixed(2));
           localStorage.setItem('current', vm.current);
+        } else {
+          vm.listDone = true;
+          localStorage.setItem('listDone', vm.listDone);
+          vm.showTip();
         }
+      },
+      showTip: () => {
+        vm.current = vm.lastEvent.value;
+        vm.goal = vm.lastEvent.value;
+        vm.title = vm.lastEvent.type + ' from ' + vm.lastEvent.name;
+        
+        localStorage.setItem('current', vm.current);
+        localStorage.setItem('goal', vm.goal);
+        localStorage.setItem('title', vm.title);
       }
     },
     mounted: function () {
@@ -108,8 +123,13 @@
             if (!donation.isTest) {
               localStorage.setItem('current', vm.current);
             }
-          }
             
+            vm.lastEvent = {type: 'donation', value: parseFloat(donation.amount), name: donation.from};
+
+            if (vm.listDone) {
+              vm.showTip();
+            }
+          }
         }
 
         if (eventData.for === 'streamlabs' && eventData.type === 'donation')  {
@@ -128,8 +148,13 @@
             if (!donation.isTest) {
               localStorage.setItem('current', vm.current);
             }
+
+            vm.lastEvent = {type: 'donation', value: parseFloat(donation.amount), name: donation.from};
+            
+            if (vm.listDone) {
+              vm.showTip();
+            }
           }
-          
         }
 
         if (eventData.for === 'twitch_account') {
@@ -151,8 +176,13 @@
               if (!cheer.isTest) {
                 localStorage.setItem('current', vm.current);
               }
-            }
+              
+              vm.lastEvent = {type: 'cheer', value: parseFloat(value.toFixed(2)), name: cheer.name};
 
+              if (vm.listDone) {
+                vm.showTip();
+              }
+            }
           }
         }
       });
@@ -175,6 +205,10 @@
 
       if (localStorage.getItem('goalQueue')) {
         this.goalQueue = JSON.parse(localStorage.getItem('goalQueue'));
+      }
+
+      if (localStorage.getItem('listDone')) {
+        this.listDone = localStorage.getItem('listDone');
       }
 
       console.log('queue', this.goalQueue);
@@ -216,7 +250,7 @@
           if (data.addToList) {
             var first = false;
             // if this is the first goal sent to the overlay, make it active right away
-            if (!localStorage.getItem('title') && !localStorage.getItem('goal') && !localStorage.getItem('current')) {
+            if ((!localStorage.getItem('title') && !localStorage.getItem('goal') && !localStorage.getItem('current')) || vm.listDone) {
               vm.title = data.title;
               vm.goal = parseFloat(data.goal);
               vm.current = parseFloat(data.current);
@@ -267,6 +301,11 @@
           }
 
           localStorage.setItem('cycleTime', vm.cycleTime);
+
+          if (vm.current / vm.goal < 1 || vm.goalQueue.length > 0) {
+            vm.listDone = false;
+            localStorage.setItem('listDone', vm.listDone);
+          }
         }
       };
       

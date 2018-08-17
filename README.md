@@ -25,7 +25,7 @@ You can set a timer for how long the completed goal should stay before the switc
 
 Amounts exceeding the current goal will be carried over to the new goal, including new donations that happen during the time between completion and switch.
 
-The last goal in the list will stay on screen after completion.
+After the last goal is completed, the progress bar will show the last donation/cheer with the user's name as the title.
 
 __Note:__ The browser source must be active, meaning the streaming software must be running and the source must be loaded, to make any changes to the goal list!
 
