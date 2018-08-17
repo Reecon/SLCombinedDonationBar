@@ -165,7 +165,8 @@
 
             // if goal value is 0 remove this goal. goal in list is same as newGoal if it was updated
             if (updated && newGoal.goal === 0) {
-              vm.goalQueue.remove(newGoal);
+              var i = vm.goalQueue.indexOf(newGoal);
+              vm.goalQueue.splice(i, 1);
             }
 
             // if no goal was updated this is a new goal. so append it to the list
