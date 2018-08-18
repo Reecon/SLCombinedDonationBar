@@ -74,6 +74,7 @@
           vm.current = overflow + newGoal.current;
           vm.current = parseFloat(vm.current.toFixed(2));
           localStorage.setItem('current', vm.current);
+          vm.full = false;
         } else {
           vm.listDone = true;
           localStorage.setItem('listDone', vm.listDone);
