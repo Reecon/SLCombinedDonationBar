@@ -283,7 +283,14 @@
 
             // if goal value is 0 remove this goal. goal in list is same as newGoal if it was updated
             if (updated && newGoal.goal === 0) {
-              var i = vm.goalQueue.indexOf(newGoal);
+              var i = 0;
+              for (goal of vm.goalQueue) {
+                if (goal.title === newGoal.title) {
+                  break;
+                } else {
+                  i++;
+                }
+              }
               vm.goalQueue.splice(i, 1);
             }
 
