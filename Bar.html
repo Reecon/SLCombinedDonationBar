@@ -11,7 +11,11 @@
           <span class="current">{{ current }}</span><span class="title">{{ title }}</span><span class="percent">{{ calcProgress }}%</span><span class="goal">{{ goal }}</span>
       </div>
     </div>
-    <div v-html="my_event"></div>
+    <ol id="goalList" style="background: black; color: white;">
+      <li v-for="item in goalQueue">
+        {{ item.title }}: {{ item.current }} / {{ item.goal }}
+      </li>
+    </ol>
   </div>
 </body>
 
@@ -38,7 +42,7 @@
         if (newFull) {
           // show name of person who completed the goal
           this.title = this.lastEvent.name + " completed " + this.title;
-          
+
           // start timer
           var timer = window.setTimeout(this.switchGoal, this.cycleTime * 1000);
         }
