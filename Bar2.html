@@ -39,6 +39,9 @@
       full: function(newFull, oldFull) {
         console.log("switching goal", this.full, newFull, oldFull);
         if (newFull) {
+          // show name of person who completed the goal
+          this.title = this.lastEvent.name + " completed " + this.title;
+
           // start timer
           var timer = window.setTimeout(this.switchGoal, this.cycleTime * 1000);
         }
