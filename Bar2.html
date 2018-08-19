@@ -230,7 +230,7 @@
           author: 'Reecon820',
           website: 'reecon820@gmail.com',
           api_key: API_Key,
-          events: ['EVENT_BAR_UPDATE']
+          events: ['EVENT_BAR_UPDATE', 'EVENT_CLEAR_DATA']
         };
         //  Send your Data to the server
         vm.socket.send(JSON.stringify(auth));
@@ -260,12 +260,16 @@
             // if this is the first goal sent to the overlay, make it active right away
             if ((!localStorage.getItem('title') && !localStorage.getItem('goal') && !localStorage.getItem('current')) || vm.listDone) {
               vm.title = data.title;
-              vm.goal = parseFloat(data.goal);
-              vm.current = parseFloat(data.current);
-              
               localStorage.setItem('title', vm.title);
+              
+              vm.goal = parseFloat(data.goal);
               localStorage.setItem('goal', vm.goal);
-              localStorage.setItem('current', vm.current);
+
+              if (data.currentUpdate) {
+                vm.current = parseFloat(data.current);
+                localStorage.setItem('current', vm.current);
+              }
+              
               first = true;
             }
             
@@ -320,7 +324,18 @@
           if (vm.current / vm.goal < 1 || vm.goalQueue.length > 0) {
             vm.listDone = false;
             localStorage.setItem('listDone', vm.listDone);
+          } else {
+            vm.listDone = true;
+            localStorage.setItem('listDone', vm.listDone);
           }
+        } else if (json.event === 'EVENT_CLEAR_DATA') {
+          console.log("CLEARING ALL DATA");
+          localStorage.clear();
+          vm.goal = 1;
+          vm.title = "n/a";
+          vm.current = 0;
+          vm.listDone = true;
+          vm.goalQueue = [];
         }
       };
       

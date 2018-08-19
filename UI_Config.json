@@ -4,7 +4,7 @@
         "label": "Current Value", 
         "tooltip": "Set the current value of the goal", 
         "type": "numberbox", 
-        "value": 33
+        "value": 0
     }, 
     "CurrentUpdate": {
         "group": "Core", 
@@ -13,33 +13,34 @@
         "type": "checkbox", 
         "value": true
     }, 
-    "CycleTime": {
-        "group": "Goal List", 
-        "label": "Goal Cycle Time", 
-        "tooltip": "Time in seconds until the goals are switched after the current one is completed", 
-        "type": "numberbox", 
-        "value": 5
-    }, 
     "Goal": {
         "group": "Core", 
         "label": "Total Goal", 
         "tooltip": "Donation Goal", 
         "type": "numberbox", 
-        "value": 200
+        "value": 500
     }, 
     "Title": {
         "group": "Core", 
         "label": "Goal Title", 
         "tooltip": "Title of the goal. Updates goal with [Order] if empty", 
         "type": "textbox", 
-        "value": "test goal 1"
+        "value": "test goal a"
     }, 
     "addToList": {
-        "group": "Goal List", 
+        "group": "Core", 
         "label": "Add or update this goal?", 
         "tooltip": "Check to add this goal to the list instead of putting it as the current goal. Or update / delete an existing goal", 
         "type": "checkbox", 
-        "value": false
+        "value": true
+    }, 
+    "btnClear": {
+        "function": "ClearData", 
+        "group": "Util", 
+        "label": "Clear All Data", 
+        "tooltip": "Clears all goals and storage of the overlay", 
+        "type": "button", 
+        "wsevent": "EVENT_CLEAR_DATA"
     }, 
     "btnCopyPath1": {
         "function": "CopyHtmlPath1", 
@@ -72,6 +73,13 @@
         "tooltip": "Sends fake donation event to test progress bar", 
         "type": "button", 
         "wsevent": "EVENT_NONE"
+    }, 
+    "cycleTime": {
+        "group": "Core", 
+        "label": "Goal Cycle Time", 
+        "tooltip": "Time in seconds until the goals are switched after the current one is completed", 
+        "type": "numberbox", 
+        "value": 10
     }, 
     "output_file": "Settings/settings.json"
 }

@@ -7,8 +7,7 @@ import sys
 import json
 sys.path.append(os.path.join(os.path.dirname(__file__), "lib")) #point at lib folder for classes / references
 
-#   Import your Settings class
-from Settings_Module import MySettings
+
 #---------------------------
 #   [Required] Script Information
 #---------------------------
@@ -16,21 +15,51 @@ ScriptName = "CombinedProgressBar"
 Website = "reecon820@gmail.com"
 Description = "Progress bar for goals that combines streamlabs donations and cheers."
 Creator = "Reecon820"
-Version = "0.4.1.1"
+Version = "0.4.2.0"
+
+
+#---------------------------
+#   Settings Handling
+#---------------------------
+class CpbSettings:
+    def __init__(self, settingsfile=None):
+        try:
+            with codecs.open(settingsfile, encoding="utf-8-sig", mode="r") as f:
+                self.__dict__ = json.load(f, encoding="utf-8")
+        except:
+            self.Title = ""
+            self.Goal = 0
+            self.Current = 0
+            self.CurrentUpdate = False
+            self.addToList = False
+            self.cycleTime = 30
+
+    def Reload(self, jsondata):
+        Parent.Log(ScriptName, jsondata)
+        self.__dict__ = json.loads(jsondata, encoding="utf-8")
+
+    def Save(self, settingsfile):
+        try:
+            with codecs.open(settingsfile, encoding="utf-8-sig", mode="w+") as f:
+                json.dump(self.__dict__, f, encoding="utf-8")
+            with codecs.open(settingsfile.replace("json", "js"), encoding="utf-8-sig", mode="w+") as f:
+                f.write("var settings = {0};".format(json.dumps(self.__dict__, encoding='utf-8')))
+        except:
+            Parent.Log(ScriptName, "Failed to save settings to file.")
 
 #---------------------------
 #   Define Global Variables
 #---------------------------
-global SettingsFile
-SettingsFile = ""
-global ScriptSettings
-ScriptSettings = MySettings()
+global cpbSettingsFile
+cpbSettingsFile = ""
+global cpbScriptSettings
+cpbScriptSettings = CpbSettings()
 
-global BarHtmlPath
-BarHtmlPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "Bar.html"))
+global cpbBarHtmlPath
+cpbBarHtmlPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "Bar.html"))
 
-global Bar2HtmlPath
-Bar2HtmlPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "Bar2.html"))
+global cpbBar2HtmlPath
+cpbBar2HtmlPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "Bar2.html"))
 
 #---------------------------
 #   [Required] Initialize Data (Only called on load)
@@ -42,34 +71,11 @@ def Init():
         os.makedirs(directory)
 
     #   Load settings
-    global SettingsFile
-    SettingsFile = os.path.join(os.path.dirname(__file__), "Settings\settings.json")
-    global ScriptSettings
-    ScriptSettings = MySettings(SettingsFile)
-    Parent.Log(ScriptName, "{}".format(ScriptSettings.__dict__))
-    ui = {}
-    UiFilePath = os.path.join(os.path.dirname(__file__), "UI_Config.json")
-    try:
-        with codecs.open(UiFilePath, encoding="utf-8-sig", mode="r") as f:
-            ui = json.load(f, encoding="utf-8")
-    except Exception as err:
-        Parent.Log(ScriptName, "Error reading UI file: {0}".format(err))
-
-    # update ui with loaded settings
-    ui['Title']['value'] = ScriptSettings.Title
-    ui['Goal']['value'] = ScriptSettings.Goal
-    ui['Current']['value'] = ScriptSettings.Current
-    ui['CurrentUpdate']['value'] = ScriptSettings.CurrentUpdate
-    ui['addToList']['value'] = ScriptSettings.addToList
-    ui['CycleTime']['value'] = ScriptSettings.CycleTime
-
-    try:
-        with codecs.open(UiFilePath, encoding="utf-8-sig", mode="w+") as f:
-            json.dump(ui, f, encoding="utf-8", indent=4, sort_keys=True)
-    except Exception as err:
-        Parent.Log(ScriptName, "Error saving UI file: {0}".format(err))
-
-    return
+    global cpbSettingsFile
+    cpbSettingsFile = os.path.join(os.path.dirname(__file__), "Settings\settings.json")
+    global cpbScriptSettings
+    cpbScriptSettings = CpbSettings(cpbSettingsFile)
+    updateUi()
 
 #---------------------------
 #   [Required] Execute Data / Process messages
@@ -96,14 +102,15 @@ def Parse(parseString, userid, username, targetid, targetname, message):
 def ReloadSettings(jsonData):
     Parent.Log(ScriptName, jsonData)
     # Execute json reloading here
-    ScriptSettings.Reload(jsonData)
-    ScriptSettings.Save(SettingsFile)
+    cpbScriptSettings.Reload(jsonData)
+    cpbScriptSettings.Save(cpbSettingsFile)
+    updateUi()
 
-    currentUpdate = 'true' if ScriptSettings.CurrentUpdate else 'false'
+    currentUpdate = 'true' if cpbScriptSettings.CurrentUpdate else 'false'
     
-    addToList = 'true' if ScriptSettings.addToList else 'false'
+    addToList = 'true' if cpbScriptSettings.addToList else 'false'
 
-    data = '{{"title": "{0}", "goal": {1}, "current": {2}, "currentUpdate": {3}, "addToList": {4}, "cycleTime": {5} }}'.format(ScriptSettings.Title, ScriptSettings.Goal, ScriptSettings.Current, currentUpdate, addToList, ScriptSettings.CycleTime)
+    data = '{{"title": "{0}", "goal": {1}, "current": {2}, "currentUpdate": {3}, "addToList": {4}, "cycleTime": {5} }}'.format(cpbScriptSettings.Title, cpbScriptSettings.Goal, cpbScriptSettings.Current, currentUpdate, addToList, cpbScriptSettings.cycleTime)
     Parent.BroadcastWsEvent("EVENT_BAR_UPDATE", data)
 
     return
@@ -121,12 +128,12 @@ def ScriptToggled(state):
     return
 
 def CopyHtmlPath1():
-    command = "echo " + BarHtmlPath + "| clip"
+    command = "echo " + cpbBarHtmlPath + "| clip"
     os.system(command)
     return
 
 def CopyHtmlPath2():
-    command = "echo " + Bar2HtmlPath + "| clip"
+    command = "echo " + cpbBar2HtmlPath + "| clip"
     os.system(command)
     return
 
@@ -138,4 +145,32 @@ def TestBits():
 def TestDonation():
     data = '{"userId": "1234567", "name": "tester", "display_name": "Tester", "amount": "69.69", "currency": "USD", "message": "giggity" }'
     Parent.BroadcastWsEvent("EVENT_DONATION", data)
+    return
+
+def ClearData():
+    pass
+
+def updateUi():
+    ui = {}
+    UiFilePath = os.path.join(os.path.dirname(__file__), "UI_Config.json")
+    try:
+        with codecs.open(UiFilePath, encoding="utf-8-sig", mode="r") as f:
+            ui = json.load(f, encoding="utf-8")
+    except Exception as err:
+        Parent.Log(ScriptName, "Error reading UI file: {0}".format(err))
+
+    # update ui with loaded settings
+    ui['Title']['value'] = cpbScriptSettings.Title
+    ui['Goal']['value'] = cpbScriptSettings.Goal
+    ui['Current']['value'] = cpbScriptSettings.Current
+    ui['CurrentUpdate']['value'] = cpbScriptSettings.CurrentUpdate
+    ui['addToList']['value'] = cpbScriptSettings.addToList
+    ui['cycleTime']['value'] = cpbScriptSettings.cycleTime
+
+    try:
+        with codecs.open(UiFilePath, encoding="utf-8-sig", mode="w+") as f:
+            json.dump(ui, f, encoding="utf-8", indent=4, sort_keys=True)
+    except Exception as err:
+        Parent.Log(ScriptName, "Error saving UI file: {0}".format(err))
+    
     return
