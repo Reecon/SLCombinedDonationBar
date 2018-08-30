@@ -141,7 +141,7 @@
           // REAL Streamlabs Donation
           
           for (donation of eventData.message) {
-            // if this is not a test read actual value from storage first
+            // if this is not a test read actual value from storage first to override potential tests
             if (localStorage.getItem('current') && !donation.isTest) {
               vm.current = parseFloat(localStorage.getItem('current'));
             }
@@ -164,7 +164,7 @@
           // Streamlabs Donation
           
           for (donation of eventData.message) {
-            // if this is not a test read actual value from storage first
+            // if this is not a test read actual value from storage first to override potential tests
             if (localStorage.getItem('current') && !donation.isTest) {
               vm.current = parseFloat(localStorage.getItem('current'));
             }
@@ -188,7 +188,7 @@
             // Twitch bits
 
             for (cheer of eventData.message) {
-              // if this is not a test read actual value from storage first
+              // if this is not a test read actual value from storage first to override potential tests
               if (localStorage.getItem('current') && !cheer.isTest) {
                 vm.current = parseFloat(localStorage.getItem('current'));
               }
