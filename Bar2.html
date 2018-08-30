@@ -41,7 +41,6 @@
     },
     watch: {
       full: function(newFull, oldFull) {
-        console.log("switching goal", this.full, newFull, oldFull);
         if (newFull) {
           // show name of person who completed the goal
           this.title = this.lastEvent.name + " completed " + this.title;
@@ -65,7 +64,6 @@
     },
     methods: {
       switchGoal: () => {
-        console.log("goal queue", vm.goalQueue);
         if (vm.goalQueue.length > 0) {
           // save overflow
           var overflow = vm.current - vm.goal;
@@ -107,27 +105,46 @@
       //---------------------------------
       this.serviceUrl = API_Socket;
       this.socket = new WebSocket(this.serviceUrl);
-
+      
       this.SLSocket = io(`https://sockets.streamlabs.com:443?token=${this.SLSocketToken}`, {transports: ['websocket']});
-
+      
       this.SLSocket.on('onconnect'), () => {
-				console.log("opened");
+        console.log("opened");
 			}; 
       
+      if (localStorage.getItem('current')) {
+        this.current = parseFloat(localStorage.getItem('current'));
+      }
+  
+      if (localStorage.getItem('title')) {
+        this.title = localStorage.getItem('title');
+      }
+  
+      if (localStorage.getItem('goal')) {
+        this.goal = parseFloat(localStorage.getItem('goal'));
+      }
+  
+      if (localStorage.getItem('cycleTime')) {
+        this.cycleTime = parseInt(localStorage.getItem('cycleTime'));
+      }
+  
+      if (localStorage.getItem('goalQueue')) {
+        this.goalQueue = JSON.parse(localStorage.getItem('goalQueue'));
+      }
+  
+
       this.SLSocket.on('event', (eventData) => {
         if (!eventData.for && eventData.type === 'donation') {
-
-          // Streamlabs Donation
-          console.log("donation",eventData.message);
+          // REAL Streamlabs Donation
           
           for (donation of eventData.message) {
             // if this is not a test read actual value from storage first
             if (localStorage.getItem('current') && !donation.isTest) {
               vm.current = parseFloat(localStorage.getItem('current'));
             }
-            vm.current += parseFloat(donation.amount);
-            vm.current = parseFloat(vm.current.toFixed(2));
-
+            var temp = vm.current + parseFloat(donation.amount);
+            vm.current = parseFloat(temp.toFixed(2));
+            
             if (!donation.isTest) {
               localStorage.setItem('current', vm.current);
             }
@@ -141,22 +158,20 @@
         }
 
         if (eventData.for === 'streamlabs' && eventData.type === 'donation')  {
-
           // Streamlabs Donation
-          console.log("donation",eventData.message);
           
           for (donation of eventData.message) {
             // if this is not a test read actual value from storage first
             if (localStorage.getItem('current') && !donation.isTest) {
               vm.current = parseFloat(localStorage.getItem('current'));
             }
-            vm.current += parseFloat(donation.amount);
-            vm.current = parseFloat(vm.current.toFixed(2));
+            var temp = vm.current + parseFloat(donation.amount);
+            vm.current = parseFloat(temp.toFixed(2));
 
             if (!donation.isTest) {
               localStorage.setItem('current', vm.current);
             }
-
+            
             vm.lastEvent = {type: 'donation', value: parseFloat(donation.amount), name: donation.from};
             
             if (vm.listDone) {
@@ -167,9 +182,7 @@
 
         if (eventData.for === 'twitch_account') {
           if (eventData.type === 'bits') {
-
             // Twitch bits
-            console.log("bits", eventData.message);
 
             for (cheer of eventData.message) {
               // if this is not a test read actual value from storage first
@@ -177,9 +190,8 @@
                 vm.current = parseFloat(localStorage.getItem('current'));
               }
               var value = parseInt(cheer.amount) / 100;
-              
-              vm.current += value;
-              vm.current = parseFloat(vm.current.toFixed(2));
+              var temp = vm.current + value;
+              vm.current = parseFloat(temp.toFixed(2));
 
               if (!cheer.isTest) {
                 localStorage.setItem('current', vm.current);
@@ -194,32 +206,6 @@
           }
         }
       });
-
-      if (localStorage.getItem('current')) {
-        this.current = parseFloat(localStorage.getItem('current'));
-      }
-
-      if (localStorage.getItem('title')) {
-        this.title = localStorage.getItem('title');
-      }
-
-      if (localStorage.getItem('goal')) {
-        this.goal = parseFloat(localStorage.getItem('goal'));
-      }
-
-      if (localStorage.getItem('cycleTime')) {
-        this.cycleTime = parseInt(localStorage.getItem('cycleTime'));
-      }
-
-      if (localStorage.getItem('goalQueue')) {
-        this.goalQueue = JSON.parse(localStorage.getItem('goalQueue'));
-      }
-
-      if (localStorage.getItem('listDone')) {
-        this.listDone = localStorage.getItem('listDone');
-      }
-
-      console.log('queue', this.goalQueue);
 
       //---------------------------------
       //  Open Event
@@ -249,10 +235,8 @@
       //---------------------------------
       this.socket.onmessage = function (message) {
         var json = JSON.parse(message.data);
-        console.log("message", message);
         if (json.event === 'EVENT_BAR_UPDATE') {
           var data = JSON.parse(json.data);
-          console.log("data", data);
           vm.cycleTime = data.cycleTime;
 
           if (data.addToList) {
@@ -260,14 +244,14 @@
             // if this is the first goal sent to the overlay, make it active right away
             if ((!localStorage.getItem('title') && !localStorage.getItem('goal') && !localStorage.getItem('current')) || vm.listDone) {
               vm.title = data.title;
-              localStorage.setItem('title', vm.title);
+              localStorage.setItem('title', this.title);
               
               vm.goal = parseFloat(data.goal);
-              localStorage.setItem('goal', vm.goal);
+              localStorage.setItem('goal', this.goal);
 
               if (data.currentUpdate) {
                 vm.current = parseFloat(data.current);
-                localStorage.setItem('current', vm.current);
+                localStorage.setItem('current', this.current);
               }
               
               first = true;

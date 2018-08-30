@@ -255,8 +255,8 @@
 
           var value = data.bits / 100;
           
-          vm.current += value;
-          vm.current = parseFloat(vm.current.toFixed(2));
+          var temp = vm.current + value;
+          vm.current = parseFloat(temp.toFixed(2));
           
           if (data.name !== "test") {
             localStorage.setItem('current', vm.current);
