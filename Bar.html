@@ -126,7 +126,7 @@
       }
 
       if (localStorage.getItem('listDone')) {
-        this.listDone = localStorage.getItem('listDone');
+        this.listDone = localStorage.getItem('listDone') === 'true';
       }
 
       console.log('queue', this.goalQueue);

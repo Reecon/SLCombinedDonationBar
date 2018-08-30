@@ -132,6 +132,9 @@
         this.goalQueue = JSON.parse(localStorage.getItem('goalQueue'));
       }
   
+      if (localStorage.getItem('listDone')) {
+        this.listDone = localStorage.getItem('listDone') === 'true';
+      }
 
       this.SLSocket.on('event', (eventData) => {
         if (!eventData.for && eventData.type === 'donation') {
