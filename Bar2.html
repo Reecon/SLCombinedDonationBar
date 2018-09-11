@@ -29,6 +29,7 @@
       current: 100,
       title: "This is only a test!",
       goalQueue: [],
+      history: [],
       cycleTime: 30,
       full: true,
       listDone: false,
@@ -136,11 +137,22 @@
         this.listDone = localStorage.getItem('listDone') === 'true';
       }
 
+      if (localStorage.getItem('history')) {
+        this.history = JSON.parse(localStorage.getItem('history'));
+      }
+
       this.SLSocket.on('event', (eventData) => {
+        console.log("SL event", eventData);
         if (!eventData.for && eventData.type === 'donation') {
           // REAL Streamlabs Donation
           
           for (donation of eventData.message) {
+            // if this is a refire event, only count it if it is not already in the history
+            if (donation.historical) {
+              if (vm.history.lastIndexOf(donation.donation_id) >= 0) {
+                return;
+              }
+            }
             // if this is not a test read actual value from storage first to override potential tests
             if (localStorage.getItem('current') && !donation.isTest) {
               vm.current = parseFloat(localStorage.getItem('current'));
@@ -153,17 +165,30 @@
             }
             
             vm.lastEvent = {type: 'donation', value: parseFloat(donation.amount), name: donation.from};
+            
+            // check if this attribute actually exists, don't want the history full of undefines
+            if (donation.donation_id) { 
+              vm.history.push(donation.donation_id);
+              localStorage.setItem('history', vm.history);
+            } else if (donation.id) {
+              vm.history.push(donation.id);
+              localStorage.setItem('history', vm.history);
+            }
 
             if (vm.listDone) {
               vm.showTip();
             }
           }
-        }
-
-        if (eventData.for === 'streamlabs' && eventData.type === 'donation')  {
+        } else if (eventData.for === 'streamlabs' && eventData.type === 'donation')  {
           // Streamlabs Donation
           
           for (donation of eventData.message) {
+            // if this is a refire event, only count it if it is not already in the history
+            if (donation.historical) {
+              if (vm.history.lastIndexOf(donation.donation_id) >= 0) {
+                return;
+              }
+            }
             // if this is not a test read actual value from storage first to override potential tests
             if (localStorage.getItem('current') && !donation.isTest) {
               vm.current = parseFloat(localStorage.getItem('current'));
@@ -177,6 +202,15 @@
             
             vm.lastEvent = {type: 'donation', value: parseFloat(donation.amount), name: donation.from};
             
+            // check if this attribute actually exists, don't want the history full of undefines
+            if (donation.donation_id) { 
+              vm.history.push(donation.donation_id);
+              localStorage.setItem('history', vm.history);
+            } else if (donation.id) {
+              vm.history.push(donation.id);
+              localStorage.setItem('history', vm.history);
+            }
+
             if (vm.listDone) {
               vm.showTip();
             }
@@ -323,6 +357,7 @@
           vm.current = 0;
           vm.listDone = true;
           vm.goalQueue = [];
+          vm.history = [];
         }
       };
       
