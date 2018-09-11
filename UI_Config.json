@@ -11,14 +11,14 @@
         "label": "Update Current Value", 
         "tooltip": "Updates the current value if checked", 
         "type": "checkbox", 
-        "value": true
+        "value": false
     }, 
     "Goal": {
         "group": "Core", 
         "label": "Total Goal", 
         "tooltip": "Donation Goal", 
         "type": "numberbox", 
-        "value": 500
+        "value": 100
     }, 
     "Title": {
         "group": "Core", 
@@ -32,7 +32,7 @@
         "label": "Add or update this goal?", 
         "tooltip": "Check to add this goal to the list instead of putting it as the current goal. Or update / delete an existing goal", 
         "type": "checkbox", 
-        "value": true
+        "value": false
     }, 
     "btnClear": {
         "function": "ClearData", 
@@ -79,7 +79,19 @@
         "label": "Goal Cycle Time", 
         "tooltip": "Time in seconds until the goals are switched after the current one is completed", 
         "type": "numberbox", 
-        "value": 10
+        "value": 30
+    }, 
+    "handleListDone": {
+        "group": "Core", 
+        "items": [
+            "Show Latest Donation or Cheer", 
+            "Repeat Last Goal Indefinitely", 
+            "Keep Last Goal Open Beyond 100%"
+        ], 
+        "label": "Behavior after goal list is completed", 
+        "tooltip": "Sets how the goal bar behaves after all goals are completed", 
+        "type": "dropdown", 
+        "value": "Show Latest Donation or Cheer"
     }, 
     "output_file": "Settings/settings.json"
 }

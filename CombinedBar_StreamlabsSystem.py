@@ -15,7 +15,7 @@ ScriptName = "CombinedProgressBar"
 Website = "reecon820@gmail.com"
 Description = "Progress bar for goals that combines streamlabs donations and cheers."
 Creator = "Reecon820"
-Version = "0.4.3.0"
+Version = "0.5.0.0"
 
 
 #---------------------------
@@ -33,6 +33,7 @@ class CpbSettings:
             self.CurrentUpdate = False
             self.addToList = False
             self.cycleTime = 30
+            self.handleListDone = "Show Latest Donation or Cheer"
 
     def Reload(self, jsondata):
         Parent.Log(ScriptName, jsondata)
@@ -110,7 +111,14 @@ def ReloadSettings(jsonData):
     
     addToList = 'true' if cpbScriptSettings.addToList else 'false'
 
-    data = '{{"title": "{0}", "goal": {1}, "current": {2}, "currentUpdate": {3}, "addToList": {4}, "cycleTime": {5} }}'.format(cpbScriptSettings.Title, cpbScriptSettings.Goal, cpbScriptSettings.Current, currentUpdate, addToList, cpbScriptSettings.cycleTime)
+    handling = 'show_donor'
+    if cpbScriptSettings.handleListDone == "Repeat Last Goal Indefinitely":
+        handling = "repeat_goal"
+
+    if cpbScriptSettings.handleListDone == "Keep Last Goal Open Beyond 100%":
+        handling = "keep_open"
+
+    data = '{{"title": "{0}", "goal": {1}, "current": {2}, "currentUpdate": {3}, "addToList": {4}, "cycleTime": {5}, "listDoneHandling": "{6}" }}'.format(cpbScriptSettings.Title, cpbScriptSettings.Goal, cpbScriptSettings.Current, currentUpdate, addToList, cpbScriptSettings.cycleTime, handling)
     Parent.BroadcastWsEvent("EVENT_BAR_UPDATE", data)
 
     return
@@ -166,6 +174,7 @@ def updateUi():
     ui['CurrentUpdate']['value'] = cpbScriptSettings.CurrentUpdate
     ui['addToList']['value'] = cpbScriptSettings.addToList
     ui['cycleTime']['value'] = cpbScriptSettings.cycleTime
+    ui['handleListDone']['value'] = cpbScriptSettings.handleListDone
 
     try:
         with codecs.open(UiFilePath, encoding="utf-8-sig", mode="w+") as f:

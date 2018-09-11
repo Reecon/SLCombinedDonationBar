@@ -34,7 +34,8 @@
       full: true,
       listDone: false,
       lastEvent: {},
-      my_event: "",
+      previousGoal: {},
+      listDoneHandling: 'show_donor',
       serviceUrl: "",
       socket: Object,
       SLSocket: Object,
@@ -43,6 +44,15 @@
     watch: {
       full: function(newFull, oldFull) {
         if (newFull) {
+          
+          // save finished goal
+          vm.previousGoal = {
+            title: vm.title,
+            goal: vm.goal,
+            current: 0
+          };
+          localStorage.setItem('previousGoal', JSON.stringify(vm.previousGoal));
+          
           // show name of person who completed the goal
           this.title = this.lastEvent.name + " completed " + this.title;
 
@@ -87,10 +97,19 @@
         } else {
           vm.listDone = true;
           localStorage.setItem('listDone', vm.listDone);
-          vm.showTip();
+          vm.handleListDone();
+        }
+      },
+      handleListDone: () => {
+        switch (vm.listDoneHandling) {
+          case 'show_donor': vm.showTip(); break;
+          case 'keep_open': vm.keepOpen(); break;
+          case 'repeat_goal': vm.repeatGoal(); break;
+          default: vm.showTip(); break;
         }
       },
       showTip: () => {
+        // show name and amount of last donation / cheer; set bar to 100%
         vm.current = vm.lastEvent.value;
         vm.goal = vm.lastEvent.value;
         vm.title = vm.lastEvent.type + ' from ' + vm.lastEvent.name;
@@ -98,6 +117,28 @@
         localStorage.setItem('current', vm.current);
         localStorage.setItem('goal', vm.goal);
         localStorage.setItem('title', vm.title);
+      },
+      keepOpen: () => {
+        // say thank you and show goal title again
+        vm.title = 'Thank You ' + vm.lastEvent.name;
+        var timer = window.setTimeout(() => {vm.title = vm.previousGoal.title;}, vm.cycleTime * 1000);
+      },
+      repeatGoal: () => {
+        // clear full state and set values to previous goal
+        vm.full = false;
+
+        vm.listDone = false;
+        localStorage.setItem('listDone', vm.listDone);
+
+        vm.title = vm.previousGoal.title;
+        localStorage.setItem('title', vm.title);
+
+        vm.goal = vm.previousGoal.goal;
+        localStorage.setItem('goal', vm.goal);
+
+        var overflow = vm.current - vm.previousGoal.goal;
+        vm.current = vm.previousGoal.current + overflow;
+        localStorage.setItem('current', vm.current);
       }
     },
     mounted: function () {
@@ -141,6 +182,14 @@
         this.history = JSON.parse(localStorage.getItem('history'));
       }
 
+      if (localStorage.getItem('listDoneHandling')) {
+        this.listDoneHandling = localStorage.getItem('listDoneHandling');
+      }
+
+      if (localStorage.getItem('previousGoal')) {
+        this.previousGoal = JSON.parse(localStorage.getItem('previousGoal'));
+      }
+
       this.SLSocket.on('event', (eventData) => {
         console.log("SL event", eventData);
         if (!eventData.for && eventData.type === 'donation') {
@@ -169,14 +218,14 @@
             // check if this attribute actually exists, don't want the history full of undefines
             if (donation.donation_id) { 
               vm.history.push(donation.donation_id);
-              localStorage.setItem('history', vm.history);
+              localStorage.setItem('history', JSON.stringify(vm.history));
             } else if (donation.id) {
               vm.history.push(donation.id);
-              localStorage.setItem('history', vm.history);
+              localStorage.setItem('history', JSON.stringify(vm.history));
             }
 
             if (vm.listDone) {
-              vm.showTip();
+              vm.handleListDone();
             }
           }
         } else if (eventData.for === 'streamlabs' && eventData.type === 'donation')  {
@@ -205,14 +254,14 @@
             // check if this attribute actually exists, don't want the history full of undefines
             if (donation.donation_id) { 
               vm.history.push(donation.donation_id);
-              localStorage.setItem('history', vm.history);
+              localStorage.setItem('history', JSON.stringify(vm.history));
             } else if (donation.id) {
               vm.history.push(donation.id);
-              localStorage.setItem('history', vm.history);
+              localStorage.setItem('history', JSON.stringify(vm.history));
             }
 
             if (vm.listDone) {
-              vm.showTip();
+              vm.handleListDone();
             }
           }
         }
@@ -237,7 +286,7 @@
               vm.lastEvent = {type: 'cheer', value: parseFloat(value.toFixed(2)), name: cheer.name};
 
               if (vm.listDone) {
-                vm.showTip();
+                vm.handleListDone();
               }
             }
           }
@@ -266,7 +315,7 @@
         //  Something went terribly wrong... Respond?!
         console.log('Error: ' + error);
       };
-
+      
       //---------------------------------
       //  Message Event
       //---------------------------------
@@ -274,24 +323,37 @@
         var json = JSON.parse(message.data);
         if (json.event === 'EVENT_BAR_UPDATE') {
           var data = JSON.parse(json.data);
+          
           vm.cycleTime = data.cycleTime;
+          localStorage.setItem('cycleTime', vm.cycleTime);
+
+          vm.listDoneHandling = data.listDoneHandling;
+          localStorage.setItem('listDoneHandling', vm.listDoneHandling);
 
           if (data.addToList) {
             var first = false;
             // if this is the first goal sent to the overlay, make it active right away
             if ((!localStorage.getItem('title') && !localStorage.getItem('goal') && !localStorage.getItem('current')) || vm.listDone) {
               vm.title = data.title;
-              localStorage.setItem('title', this.title);
+              localStorage.setItem('title', vm.title);
               
               vm.goal = parseFloat(data.goal);
-              localStorage.setItem('goal', this.goal);
+              localStorage.setItem('goal', vm.goal);
 
               if (data.currentUpdate) {
                 vm.current = parseFloat(data.current);
-                localStorage.setItem('current', this.current);
+                localStorage.setItem('current', vm.current);
               }
               
               first = true;
+              
+              // save this goal as previous, in case this is the only one
+              vm.previousGoal = {
+                title: vm.title,
+                goal: vm.goal,
+                current: 0
+              };
+              localStorage.setItem('previousGoal', JSON.stringify(vm.previousGoal));
             }
             
             var newGoal = {'title': data.title, 'goal': data.goal, 'current': data.current};
@@ -338,9 +400,15 @@
               vm.current = parseFloat(data.current);
               localStorage.setItem('current', vm.current);
             }
-          }
 
-          localStorage.setItem('cycleTime', vm.cycleTime);
+            // save this goal as previous
+            vm.previousGoal = {
+                title: vm.title,
+                goal: vm.goal,
+                current: 0
+              };
+              localStorage.setItem('previousGoal', JSON.stringify(vm.previousGoal));
+          }
 
           if (vm.current / vm.goal < 1 || vm.goalQueue.length > 0) {
             vm.listDone = false;
@@ -358,6 +426,7 @@
           vm.listDone = true;
           vm.goalQueue = [];
           vm.history = [];
+          vm.listDoneHandling = 'show_donor';
         }
       };
       

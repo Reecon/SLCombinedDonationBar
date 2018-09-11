@@ -32,14 +32,23 @@
       full: true,
       listDone: false,
       lastEvent: {},
-      my_event: "",
+      previousGoal: {},
+      listDoneHandling: 'show_donor',
       serviceUrl: "",
       socket: Object
     },
     watch: {
       full: function(newFull, oldFull) {
-        console.log("switching goal", this.full, newFull, oldFull);
         if (newFull) {
+          
+          // save finished goal
+          vm.previousGoal = {
+            title: vm.title,
+            goal: vm.goal,
+            current: 0
+          };
+          localStorage.setItem('previousGoal', JSON.stringify(vm.previousGoal));
+          
           // show name of person who completed the goal
           this.title = this.lastEvent.name + " completed " + this.title;
 
@@ -62,7 +71,6 @@
     },
     methods: {
       switchGoal: () => {
-        console.log("goal queue", vm.goalQueue);
         if (vm.goalQueue.length > 0) {
           // save overflow
           var overflow = vm.current - vm.goal;
@@ -85,10 +93,19 @@
         } else {
           vm.listDone = true;
           localStorage.setItem('listDone', vm.listDone);
-          vm.showTip();
+          vm.handleListDone();
+        }
+      },
+      handleListDone: () => {
+        switch (vm.listDoneHandling) {
+          case 'show_donor': vm.showTip(); break;
+          case 'keep_open': vm.keepOpen(); break;
+          case 'repeat_goal': vm.repeatGoal(); break;
+          default: vm.showTip(); break;
         }
       },
       showTip: () => {
+        // show name and amount of last donation / cheer; set bar to 100%
         vm.current = vm.lastEvent.value;
         vm.goal = vm.lastEvent.value;
         vm.title = vm.lastEvent.type + ' from ' + vm.lastEvent.name;
@@ -96,6 +113,28 @@
         localStorage.setItem('current', vm.current);
         localStorage.setItem('goal', vm.goal);
         localStorage.setItem('title', vm.title);
+      },
+      keepOpen: () => {
+        // say thank you and show goal title again
+        vm.title = 'Thank You ' + vm.lastEvent.name;
+        var timer = window.setTimeout(() => {vm.title = vm.previousGoal.title;}, vm.cycleTime * 1000);
+      },
+      repeatGoal: () => {
+        // clear full state and set values to previous goal
+        vm.full = false;
+
+        vm.listDone = false;
+        localStorage.setItem('listDone', vm.listDone);
+
+        vm.title = vm.previousGoal.title;
+        localStorage.setItem('title', vm.title);
+
+        vm.goal = vm.previousGoal.goal;
+        localStorage.setItem('goal', vm.goal);
+
+        var overflow = vm.current - vm.previousGoal.goal;
+        vm.current = vm.previousGoal.current + overflow;
+        localStorage.setItem('current', vm.current);
       }
     },
     mounted: function () {
@@ -129,7 +168,14 @@
         this.listDone = localStorage.getItem('listDone') === 'true';
       }
 
-      console.log('queue', this.goalQueue);
+      if (localStorage.getItem('listDoneHandling')) {
+        this.listDoneHandling = localStorage.getItem('listDoneHandling');
+      }
+
+      if (localStorage.getItem('previousGoal')) {
+        this.previousGoal = JSON.parse(localStorage.getItem('previousGoal'));
+      }
+
       //---------------------------------
       //  Open Event
       //---------------------------------
@@ -157,12 +203,17 @@
       //  Message Event
       //---------------------------------
       this.socket.onmessage = function (message) {
+        console.log('event', message);
         var json = JSON.parse(message.data);
         
         if (json.event === 'EVENT_BAR_UPDATE') {
           var data = JSON.parse(json.data);
-          console.log("data", data);
+          
           vm.cycleTime = data.cycleTime;
+          localStorage.setItem('cycleTime', vm.cycleTime);
+
+          vm.listDoneHandling = data.listDoneHandling;
+          localStorage.setItem('listDoneHandling', vm.listDoneHandling);
 
           if (data.addToList) {
             var first = false;
@@ -180,6 +231,14 @@
               }
 
               first = true;
+              
+              // save this goal as previous, in case this is the only one
+              vm.previousGoal = {
+                title: vm.title,
+                goal: vm.goal,
+                current: 0
+              };
+              localStorage.setItem('previousGoal', JSON.stringify(vm.previousGoal));
             }
             
             var newGoal = {'title': data.title, 'goal': data.goal, 'current': data.current};
@@ -226,9 +285,15 @@
               vm.current = parseFloat(data.current);
               localStorage.setItem('current', vm.current);
             }
+            
+            // save this goal as previous
+            vm.previousGoal = {
+                title: vm.title,
+                goal: vm.goal,
+                current: 0
+              };
+              localStorage.setItem('previousGoal', JSON.stringify(vm.previousGoal));
           }
-
-          localStorage.setItem('cycleTime', vm.cycleTime);
 
           if (vm.current / vm.goal < 1 || vm.goalQueue.length > 0) {
             vm.listDone = false;
@@ -245,6 +310,8 @@
           vm.current = 0;
           vm.listDone = true;
           vm.goalQueue = [];
+          m.listDoneHandling = 'show_donor';
+
         } else if (json.event === 'EVENT_CHEER') {
           var data = JSON.parse(json.data);
 
@@ -265,7 +332,7 @@
           vm.lastEvent = {type: 'cheer', value: parseFloat(value.toFixed(2)), name: data.name};
           
           if (vm.listDone) {
-            vm.showTip();
+            vm.handleListDone();
           }
         } else if (json.event === 'EVENT_DONATION') {
           var data = JSON.parse(json.data);
@@ -285,7 +352,7 @@
           vm.lastEvent = {type: 'donation', value: parseFloat(data.amount), name: data.name};
           
           if (vm.listDone) {
-            vm.showTip();
+            vm.handleListDone();
           }
         }
       };
