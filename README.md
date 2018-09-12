@@ -30,6 +30,7 @@ You have several options for how the progress bar will behave when all goals are
 * Show Latest Donation or Cheer
 * Repeat Last Goal Indefinitely
 * Keep Last Goal Open Beyond 100%
+* Make Random Goals
 
 __Note:__ The browser source must be active, meaning the streaming software must be running and the source must be loaded, to make any changes to the goal list!
 

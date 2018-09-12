@@ -15,7 +15,7 @@ ScriptName = "CombinedProgressBar"
 Website = "reecon820@gmail.com"
 Description = "Progress bar for goals that combines streamlabs donations and cheers."
 Creator = "Reecon820"
-Version = "0.5.0.0"
+Version = "0.5.1.0"
 
 
 #---------------------------
@@ -114,9 +114,10 @@ def ReloadSettings(jsonData):
     handling = 'show_donor'
     if cpbScriptSettings.handleListDone == "Repeat Last Goal Indefinitely":
         handling = "repeat_goal"
-
-    if cpbScriptSettings.handleListDone == "Keep Last Goal Open Beyond 100%":
+    elif cpbScriptSettings.handleListDone == "Keep Last Goal Open Beyond 100%":
         handling = "keep_open"
+    elif cpbScriptSettings.handleListDone == "Make Random Goal":
+        handling = "random_goal"
 
     data = '{{"title": "{0}", "goal": {1}, "current": {2}, "currentUpdate": {3}, "addToList": {4}, "cycleTime": {5}, "listDoneHandling": "{6}" }}'.format(cpbScriptSettings.Title, cpbScriptSettings.Goal, cpbScriptSettings.Current, currentUpdate, addToList, cpbScriptSettings.cycleTime, handling)
     Parent.BroadcastWsEvent("EVENT_BAR_UPDATE", data)

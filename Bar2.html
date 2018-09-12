@@ -27,7 +27,7 @@
     data: {
       goal: 100,
       current: 100,
-      title: "This is only a test!",
+      title: "Set Up Your Goals!",
       goalQueue: [],
       history: [],
       cycleTime: 30,
@@ -105,6 +105,7 @@
           case 'show_donor': vm.showTip(); break;
           case 'keep_open': vm.keepOpen(); break;
           case 'repeat_goal': vm.repeatGoal(); break;
+          case 'random_goal': vm.randomGoal(); break;
           default: vm.showTip(); break;
         }
       },
@@ -137,7 +138,30 @@
         localStorage.setItem('goal', vm.goal);
 
         var overflow = vm.current - vm.previousGoal.goal;
-        vm.current = vm.previousGoal.current + overflow;
+        var tmp = vm.previousGoal.current + overflow;
+        vm.current = parseFloat(tmp.toFixed(2));
+        localStorage.setItem('current', vm.current);
+      },
+      randomGoal: () => {
+        // generate random goal
+        vm.full = false;
+
+        var newGoal = (Math.floor(Math.random() * 2500) + 25) / 100;
+        if (newGoal > 25) { newGoal = Math.floor(newGoal); }
+        newGoal = parseFloat(newGoal.toFixed(2));
+        
+        vm.listDone = false;
+        localStorage.setItem('listDone', vm.listDone);
+
+        vm.title = "Random Fun Goal";
+        localStorage.setItem('title', vm.title);
+
+        vm.goal = newGoal;
+        localStorage.setItem('goal', vm.goal);
+
+        var overflow = vm.current - vm.previousGoal.goal;
+        var tmp = vm.previousGoal.current + overflow;
+        vm.current = parseFloat(tmp.toFixed(2));
         localStorage.setItem('current', vm.current);
       }
     },
@@ -420,9 +444,9 @@
         } else if (json.event === 'EVENT_CLEAR_DATA') {
           console.log("CLEARING ALL DATA");
           localStorage.clear();
-          vm.goal = 1;
-          vm.title = "n/a";
-          vm.current = 0;
+          vm.goal = 100;
+          vm.title = "Set Up Your Goals!";
+          vm.current = 100;
           vm.listDone = true;
           vm.goalQueue = [];
           vm.history = [];

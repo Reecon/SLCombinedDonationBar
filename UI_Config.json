@@ -11,7 +11,7 @@
         "label": "Update Current Value", 
         "tooltip": "Updates the current value if checked", 
         "type": "checkbox", 
-        "value": false
+        "value": true
     }, 
     "Goal": {
         "group": "Core", 
@@ -86,7 +86,8 @@
         "items": [
             "Show Latest Donation or Cheer", 
             "Repeat Last Goal Indefinitely", 
-            "Keep Last Goal Open Beyond 100%"
+            "Keep Last Goal Open Beyond 100%", 
+            "Make Random Goal"
         ], 
         "label": "Behavior after goal list is completed", 
         "tooltip": "Sets how the goal bar behaves after all goals are completed", 
