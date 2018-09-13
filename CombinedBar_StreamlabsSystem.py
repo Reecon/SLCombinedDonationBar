@@ -15,7 +15,7 @@ ScriptName = "CombinedProgressBar"
 Website = "reecon820@gmail.com"
 Description = "Progress bar for goals that combines streamlabs donations and cheers."
 Creator = "Reecon820"
-Version = "0.5.1.0"
+Version = "0.5.2.0"
 
 
 #---------------------------
@@ -34,6 +34,7 @@ class CpbSettings:
             self.addToList = False
             self.cycleTime = 30
             self.handleListDone = "Show Latest Donation or Cheer"
+            self.goalRepeat = False
 
     def Reload(self, jsondata):
         Parent.Log(ScriptName, jsondata)
@@ -111,6 +112,8 @@ def ReloadSettings(jsonData):
     
     addToList = 'true' if cpbScriptSettings.addToList else 'false'
 
+    multiClear = 'true' if cpbScriptSettings.goalRepeat else 'false'
+
     handling = 'show_donor'
     if cpbScriptSettings.handleListDone == "Repeat Last Goal Indefinitely":
         handling = "repeat_goal"
@@ -119,7 +122,7 @@ def ReloadSettings(jsonData):
     elif cpbScriptSettings.handleListDone == "Make Random Goal":
         handling = "random_goal"
 
-    data = '{{"title": "{0}", "goal": {1}, "current": {2}, "currentUpdate": {3}, "addToList": {4}, "cycleTime": {5}, "listDoneHandling": "{6}" }}'.format(cpbScriptSettings.Title, cpbScriptSettings.Goal, cpbScriptSettings.Current, currentUpdate, addToList, cpbScriptSettings.cycleTime, handling)
+    data = '{{"title": "{0}", "goal": {1}, "current": {2}, "currentUpdate": {3}, "addToList": {4}, "cycleTime": {5}, "listDoneHandling": "{6}", "multiClear": {7} }}'.format(cpbScriptSettings.Title, cpbScriptSettings.Goal, cpbScriptSettings.Current, currentUpdate, addToList, cpbScriptSettings.cycleTime, handling, multiClear)
     Parent.BroadcastWsEvent("EVENT_BAR_UPDATE", data)
 
     return
@@ -176,6 +179,7 @@ def updateUi():
     ui['addToList']['value'] = cpbScriptSettings.addToList
     ui['cycleTime']['value'] = cpbScriptSettings.cycleTime
     ui['handleListDone']['value'] = cpbScriptSettings.handleListDone
+    ui['goalRepeat']['value'] = cpbScriptSettings.goalRepeat
 
     try:
         with codecs.open(UiFilePath, encoding="utf-8-sig", mode="w+") as f:

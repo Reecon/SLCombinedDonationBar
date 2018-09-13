@@ -34,6 +34,8 @@
       lastEvent: {},
       previousGoal: {},
       listDoneHandling: 'show_donor',
+      repeatOnMulticlear: false,
+      wasMulticleared: false,
       serviceUrl: "",
       socket: Object
     },
@@ -74,6 +76,18 @@
         if (vm.goalQueue.length > 0) {
           // save overflow
           var overflow = vm.current - vm.goal;
+
+          // multiple iterations at once
+          if (vm.repeatOnMulticlear) {
+            if (overflow > vm.goal) {
+              vm.repeatGoal();
+              return;
+            } else if (vm.wasMulticleared) {
+              vm.wasMulticleared = false;
+              vm.repeatGoal();
+              return;
+            }
+          }
 
           // update current with new values
           var newGoal = vm.goalQueue[0];
@@ -124,10 +138,17 @@
         // clear full state and set values to previous goal
         vm.full = false;
 
+        var prevTitle = vm.previousGoal.title;
+        var numberIndex = prevTitle.lastIndexOf('#');
+        var cleanTitle = prevTitle.substring(0, numberIndex).replace(/^\s+|\s+$/g, ''); // strip whitespaces 
+        if (!cleanTitle) {cleanTitle = prevTitle.replace(/^\s+|\s+$/g, '');} // no number present on first repetition
+        var counter = parseInt(prevTitle.substring(numberIndex + 1, prevTitle.length)) ? parseInt(prevTitle.substring(numberIndex + 1, prevTitle.length)) : 1;
+        counter += 1; // at least 2 because first repetition
+
         vm.listDone = false;
         localStorage.setItem('listDone', vm.listDone);
 
-        vm.title = vm.previousGoal.title;
+        vm.title = cleanTitle + ' #' + counter;
         localStorage.setItem('title', vm.title);
 
         vm.goal = vm.previousGoal.goal;
@@ -141,6 +162,13 @@
         // generate random goal
         vm.full = false;
         
+        var prevTitle = vm.previousGoal.title;
+        var numberIndex = prevTitle.lastIndexOf('#');
+        var cleanTitle = prevTitle.substring(0, numberIndex).replace(/^\s+|\s+$/g, ''); // strip whitespaces 
+        if (!cleanTitle) {cleanTitle = prevTitle.replace(/^\s+|\s+$/g, '');} // no number present on first random goal
+        var counter = parseInt(prevTitle.substring(numberIndex + 1, prevTitle.length)) ? parseInt(prevTitle.substring(numberIndex + 1, prevTitle.length)) : 0;
+        counter += 1; // at least 1 because first random goal
+
         var newGoal = (Math.floor(Math.random() * 2500) + 25) / 100;
         if (newGoal > 25) { newGoal = Math.floor(newGoal); }
         newGoal = parseFloat(newGoal.toFixed(2));
@@ -148,7 +176,7 @@
         vm.listDone = false;
         localStorage.setItem('listDone', vm.listDone);
 
-        vm.title = "Random Fun Goal";
+        vm.title = "Random Fun Goal #" + counter;
         localStorage.setItem('title', vm.title);
 
         vm.goal = newGoal;
@@ -199,6 +227,10 @@
         this.previousGoal = JSON.parse(localStorage.getItem('previousGoal'));
       }
 
+      if (localStorage.getItem('repeatOnMulticlear')) {
+        this.repeatOnMulticlear = localStorage.getItem('repeatOnMulticlear') === 'true';
+      }
+
       //---------------------------------
       //  Open Event
       //---------------------------------
@@ -237,6 +269,9 @@
 
           vm.listDoneHandling = data.listDoneHandling;
           localStorage.setItem('listDoneHandling', vm.listDoneHandling);
+
+          vm.repeatOnMulticlear = data.multiClear;
+          localStorage.setItem('repeatOnMulticlear', vm.repeatOnMulticlear);
 
           if (data.addToList) {
             var first = false;
@@ -334,6 +369,7 @@
           vm.listDone = true;
           vm.goalQueue = [];
           m.listDoneHandling = 'show_donor';
+          vm.repeatOnMulticlear = false;
 
         } else if (json.event === 'EVENT_CHEER') {
           var data = JSON.parse(json.data);
