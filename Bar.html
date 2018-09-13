@@ -164,8 +164,6 @@
         
         var prevTitle = vm.previousGoal.title;
         var numberIndex = prevTitle.lastIndexOf('#');
-        var cleanTitle = prevTitle.substring(0, numberIndex).replace(/^\s+|\s+$/g, ''); // strip whitespaces 
-        if (!cleanTitle) {cleanTitle = prevTitle.replace(/^\s+|\s+$/g, '');} // no number present on first random goal
         var counter = parseInt(prevTitle.substring(numberIndex + 1, prevTitle.length)) ? parseInt(prevTitle.substring(numberIndex + 1, prevTitle.length)) : 0;
         counter += 1; // at least 1 because first random goal
 
