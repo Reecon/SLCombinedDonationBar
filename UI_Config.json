@@ -11,7 +11,7 @@
         "label": "Update Current Value", 
         "tooltip": "Updates the current value if checked", 
         "type": "checkbox", 
-        "value": true
+        "value": false
     }, 
     "Goal": {
         "group": "Core", 
@@ -25,14 +25,14 @@
         "label": "Goal Title", 
         "tooltip": "Title of the goal. Updates goal with [Order] if empty", 
         "type": "textbox", 
-        "value": "test goal a"
+        "value": "test goal b"
     }, 
     "addToList": {
         "group": "Core", 
         "label": "Add or update this goal?", 
         "tooltip": "Check to add this goal to the list instead of putting it as the current goal. Or update / delete an existing goal", 
         "type": "checkbox", 
-        "value": false
+        "value": true
     }, 
     "btnClear": {
         "function": "ClearData", 
@@ -80,6 +80,13 @@
         "tooltip": "Time in seconds until the goals are switched after the current one is completed", 
         "type": "numberbox", 
         "value": 30
+    }, 
+    "goalRepeat": {
+        "group": "Core", 
+        "label": "Repeats Goals if Cleared Multiple Times at Once?", 
+        "tooltip": "If this is checked, goals that get would get completed more than once with the last donation will be repeated automatically", 
+        "type": "checkbox", 
+        "value": false
     }, 
     "handleListDone": {
         "group": "Core", 
