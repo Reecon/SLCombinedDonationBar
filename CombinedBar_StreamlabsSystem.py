@@ -15,7 +15,7 @@ ScriptName = "CombinedProgressBar"
 Website = "reecon820@gmail.com"
 Description = "Progress bar for goals that combines streamlabs donations and cheers."
 Creator = "Reecon820"
-Version = "0.5.2.0"
+Version = "0.5.2.1"
 
 
 #---------------------------
@@ -37,7 +37,7 @@ class CpbSettings:
             self.goalRepeat = False
 
     def Reload(self, jsondata):
-        Parent.Log(ScriptName, jsondata)
+        #Parent.Log(ScriptName, jsondata)
         self.__dict__ = json.loads(jsondata, encoding="utf-8")
 
     def Save(self, settingsfile):
@@ -102,7 +102,7 @@ def Parse(parseString, userid, username, targetid, targetname, message):
 #   [Optional] Reload Settings (Called when a user clicks the Save Settings button in the Chatbot UI)
 #---------------------------
 def ReloadSettings(jsonData):
-    Parent.Log(ScriptName, jsonData)
+    #Parent.Log(ScriptName, jsonData)
     # Execute json reloading here
     cpbScriptSettings.Reload(jsonData)
     cpbScriptSettings.Save(cpbSettingsFile)
