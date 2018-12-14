@@ -1,1 +1,1 @@
-﻿var settings = {"cycleTime": 30, "Current": 0, "goalRepeat": false, "Goal": 100, "CurrentUpdate": false, "addToList": false, "handleListDone": "Show Latest Donation or Cheer", "Title": "test goal a"};
+﻿var settings = {"cycleTime": 20, "Current": 0, "goalRepeat": false, "Goal": 25, "CurrentUpdate": true, "addToList": false, "handleListDone": "Make Random Goal", "Title": "test goal a"};

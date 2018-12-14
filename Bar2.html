@@ -35,6 +35,8 @@
       listDone: false,
       lastEvent: {},
       previousGoal: {},
+      eventQueue: [],
+      eventInterval: false,
       listDoneHandling: 'show_donor',
       repeatOnMulticlear: false,
       wasMulticleared: false,
@@ -48,9 +50,9 @@
         if (newFull) {
           
           // save finished goal
-          vm.previousGoal = {
-            title: vm.title,
-            goal: vm.goal,
+          this.previousGoal = {
+            title: this.title,
+            goal: this.goal,
             current: 0
           };
           localStorage.setItem('previousGoal', JSON.stringify(vm.previousGoal));
@@ -83,13 +85,15 @@
 
           // multiple iterations at once
           if (vm.repeatOnMulticlear) {
-            if (overflow > vm.goal) {
+            if (overflow > vm.goal) {  // at least cleared twice
               vm.wasMulticleared = true;
               vm.repeatGoal();
+              if (!vm.eventInterval) {vm.eventInterval = window.setInterval(vm.processEventQueue, vm.cycleTime * 100);}
               return;
             } else if (vm.wasMulticleared) {
               vm.wasMulticleared = false;
               vm.repeatGoal();
+              if (!vm.eventInterval) {vm.eventInterval = window.setInterval(vm.processEventQueue, vm.cycleTime * 100);}
               return;
             }
           }
@@ -109,6 +113,7 @@
           vm.current = parseFloat(vm.current.toFixed(2));
           localStorage.setItem('current', vm.current);
           vm.full = false;
+          if (!vm.eventInterval) {vm.eventInterval = window.setInterval(vm.processEventQueue, vm.cycleTime * 100);}
         } else {
           vm.listDone = true;
           localStorage.setItem('listDone', vm.listDone);
@@ -123,6 +128,7 @@
           case 'random_goal': vm.randomGoal(); break;
           default: vm.showTip(); break;
         }
+        if (!vm.eventInterval) {vm.eventInterval = window.setInterval(vm.processEventQueue, vm.cycleTime * 100);}
       },
       showTip: () => {
         // show name and amount of last donation / cheer; set bar to 100%
@@ -190,6 +196,56 @@
         var tmp = overflow; // always start new iteration at 0 + overflow
         vm.current = parseFloat(tmp.toFixed(2));
         localStorage.setItem('current', vm.current);
+      },
+      handleEvent: (newEvent) => {
+        // newEvent: {type: ['donation', 'cheer'], value: parseFloat(amount), name: from, isTest: [true, false]};
+        console.log("newEvent: ", newEvent, vm.full, !(vm.listDoneHandling === 'show_donor'));
+        // only hanle events immediately if the bar is not full
+        if (vm.full) {
+          vm.eventQueue.push(newEvent);
+          console.log("queue", vm.eventQueue.length);
+          if (vm.listDone) {
+            vm.handleListDone();
+          }
+        } else {
+          console.log("handle")
+          var temp = vm.current + newEvent.value;
+          vm.current = parseFloat(temp.toFixed(2));
+
+          if (!newEvent.isTest) {
+            localStorage.setItem('current', vm.current);
+          }
+          
+          vm.lastEvent = newEvent;
+          
+          if (vm.listDone) {
+            vm.handleListDone();
+          }
+        }
+
+      }, 
+      processEventQueue: () => {
+        // only keep processing until the goal is full
+        console.log("process ", vm.eventQueue.length, vm.eventQueue.length > 0, !vm.full);
+        if (vm.eventQueue.length > 0 && (!vm.full || vm.listDoneHandling === 'keep_open' || vm.listDoneHandling === 'show_donor')) {
+          e = vm.eventQueue[0];
+          vm.eventQueue = vm.eventQueue.splice(1);
+          console.log("process: ", e.name, e.value);
+          var temp = vm.current + e.value;
+          vm.current = parseFloat(temp.toFixed(2));
+          if (!e.isTest) {
+            localStorage.setItem('current', vm.current);
+          }
+          vm.lastEvent = e;
+          if (vm.listDone) {
+            vm.handleListDone();
+          }
+          
+        } else {
+          console.log("stop timer");
+          window.clearInterval(vm.eventInterval);
+          vm.eventInterval = false;
+        }
       }
     },
     mounted: function () {
@@ -251,24 +307,19 @@
           // REAL Streamlabs Donation
           
           for (donation of eventData.message) {
+            var eType = 'donation';
+            var eValue = parseFloat(donation.amount);
+            var eName = donation.from;
+            var eTest = donation.isTest;
             // if this is a refire event, only count it if it is not already in the history
             if (donation.historical) {
               if (vm.history.lastIndexOf(donation.donation_id) >= 0) {
                 return;
               }
             }
-            // if this is not a test read actual value from storage first to override potential tests
-            if (localStorage.getItem('current') && !donation.isTest) {
-              vm.current = parseFloat(localStorage.getItem('current'));
-            }
-            var temp = vm.current + parseFloat(donation.amount);
-            vm.current = parseFloat(temp.toFixed(2));
             
-            if (!donation.isTest) {
-              localStorage.setItem('current', vm.current);
-            }
-            
-            vm.lastEvent = {type: 'donation', value: parseFloat(donation.amount), name: donation.from};
+            var newEvetn = {type: eType, value: eValue, name: eName, isTest: eTest};
+            vm.handleEvent(newEvent);
             
             // check if this attribute actually exists, don't want the history full of undefines
             if (donation.donation_id) { 
@@ -277,34 +328,25 @@
             } else if (donation.id) {
               vm.history.push(donation.id);
               localStorage.setItem('history', JSON.stringify(vm.history));
-            }
-
-            if (vm.listDone) {
-              vm.handleListDone();
             }
           }
         } else if (eventData.for === 'streamlabs' && eventData.type === 'donation')  {
           // Streamlabs Donation
           
           for (donation of eventData.message) {
+            var eType = 'donation';
+            var eValue = parseFloat(donation.amount);
+            var eName = donation.from;
+            var eTest = donation.isTest;
             // if this is a refire event, only count it if it is not already in the history
             if (donation.historical) {
               if (vm.history.lastIndexOf(donation.donation_id) >= 0) {
                 return;
               }
             }
-            // if this is not a test read actual value from storage first to override potential tests
-            if (localStorage.getItem('current') && !donation.isTest) {
-              vm.current = parseFloat(localStorage.getItem('current'));
-            }
-            var temp = vm.current + parseFloat(donation.amount);
-            vm.current = parseFloat(temp.toFixed(2));
 
-            if (!donation.isTest) {
-              localStorage.setItem('current', vm.current);
-            }
-            
-            vm.lastEvent = {type: 'donation', value: parseFloat(donation.amount), name: donation.from};
+            var newEvent = {type: eType, value: eValue, name: eName, isTest: eTest};
+            vm.handleEvent(newEvent);
             
             // check if this attribute actually exists, don't want the history full of undefines
             if (donation.donation_id) { 
@@ -313,10 +355,6 @@
             } else if (donation.id) {
               vm.history.push(donation.id);
               localStorage.setItem('history', JSON.stringify(vm.history));
-            }
-
-            if (vm.listDone) {
-              vm.handleListDone();
             }
           }
         }
@@ -326,23 +364,18 @@
             // Twitch bits
 
             for (cheer of eventData.message) {
+              var eType = 'cheer';
+              var temp = parseInt(cheer.amount) / 100;
+              var eValue = parseFloat(temp.toFixed(2));
+              var eName = cheer.name;
+              var eTest = cheer.isTest;
               // if this is not a test read actual value from storage first to override potential tests
               if (localStorage.getItem('current') && !cheer.isTest) {
                 vm.current = parseFloat(localStorage.getItem('current'));
               }
-              var value = parseInt(cheer.amount) / 100;
-              var temp = vm.current + value;
-              vm.current = parseFloat(temp.toFixed(2));
-
-              if (!cheer.isTest) {
-                localStorage.setItem('current', vm.current);
-              }
               
-              vm.lastEvent = {type: 'cheer', value: parseFloat(value.toFixed(2)), name: cheer.name};
-
-              if (vm.listDone) {
-                vm.handleListDone();
-              }
+              var newEvent = {type: eType, value: eValue, name: eName, isTest: eTest};
+              vm.handleEvent(newEvent);
             }
           }
         }
