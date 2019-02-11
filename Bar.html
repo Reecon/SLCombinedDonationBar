@@ -36,7 +36,7 @@
       eventQueue: [],
       eventInterval: false,
       listDoneHandling: 'show_donor',
-      repeatOnMulticlear: false,
+      repeatOnMulticlear: 'do_not_repeat',
       wasMulticleared: false,
       serviceUrl: "",
       socket: Object
@@ -80,12 +80,13 @@
           var overflow = vm.current - vm.goal;
 
           // multiple iterations at once
-          if (vm.repeatOnMulticlear) {
+          if (vm.repeatOnMulticlear === "Repeat and keep" || vm.repeatOnMulticlear === "Repeat and switch") {
             if (overflow > vm.goal) {  // at least cleared twice
+              vm.wasMulticleared = true;
               vm.repeatGoal();
               if (!vm.eventInterval) {vm.eventInterval = window.setInterval(vm.processEventQueue, vm.cycleTime * 100);}
               return;
-            } else if (vm.wasMulticleared) {
+            } else if (vm.wasMulticleared && (vm.repeatOnMulticlear === "Repeat and keep")) {
               vm.wasMulticleared = false;
               vm.repeatGoal();
               if (!vm.eventInterval) {vm.eventInterval = window.setInterval(vm.processEventQueue, vm.cycleTime * 100);}
@@ -282,7 +283,7 @@
       }
 
       if (localStorage.getItem('repeatOnMulticlear')) {
-        this.repeatOnMulticlear = localStorage.getItem('repeatOnMulticlear') === 'true';
+        this.repeatOnMulticlear = localStorage.getItem('repeatOnMulticlear');
       }
 
       //---------------------------------
@@ -423,7 +424,7 @@
           vm.listDone = true;
           vm.goalQueue = [];
           vm.listDoneHandling = 'show_donor';
-          vm.repeatOnMulticlear = false;
+          vm.repeatOnMulticlear = 'Do not repeat';
 
         } else if (json.event === 'EVENT_CHEER') {
           var data = JSON.parse(json.data);

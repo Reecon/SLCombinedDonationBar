@@ -1,1 +1,1 @@
-﻿{"cycleTime": 20, "Current": 0, "goalRepeat": false, "Goal": 25, "CurrentUpdate": true, "addToList": false, "handleListDone": "Make Random Goal", "Title": "test goal a"}
+﻿{"cycleTime": 30, "Current": 0, "goalRepeat": "Do not repeat", "Goal": 100, "CurrentUpdate": false, "addToList": false, "handleListDone": "Show Latest Donation or Cheer", "Title": "Title goes here"}

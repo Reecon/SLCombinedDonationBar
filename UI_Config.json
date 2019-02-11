@@ -11,21 +11,21 @@
         "label": "Update Current Value", 
         "tooltip": "Updates the current value if checked", 
         "type": "checkbox", 
-        "value": true
+        "value": false
     }, 
     "Goal": {
         "group": "Core", 
         "label": "Total Goal", 
         "tooltip": "Donation Goal", 
         "type": "numberbox", 
-        "value": 25
+        "value": 100
     }, 
     "Title": {
         "group": "Core", 
         "label": "Goal Title", 
         "tooltip": "Title of the goal. Updates goal with [Order] if empty", 
         "type": "textbox", 
-        "value": "test goal a"
+        "value": "Title goes here"
     }, 
     "addToList": {
         "group": "Core", 
@@ -79,14 +79,19 @@
         "label": "Goal Cycle Time", 
         "tooltip": "Time in seconds until the goals are switched after the current one is completed", 
         "type": "numberbox", 
-        "value": 20
+        "value": 30
     }, 
     "goalRepeat": {
         "group": "Core", 
-        "label": "Repeats Goals if Cleared Multiple Times at Once?", 
-        "tooltip": "If this is checked, goals that get would get completed more than once with the last donation will be repeated automatically", 
-        "type": "checkbox", 
-        "value": false
+        "items": [
+            "Do not repeat", 
+            "Repeat and switch", 
+            "Repeat and keep"
+        ], 
+        "label": "Repeat Goals if Cleared Multiple Times at Once?", 
+        "tooltip": "Goals that would get completed more than once with the last donation will be repeated automatically. Option to switch to the next goal after the repetition or to still keep the current goal", 
+        "type": "dropdown", 
+        "value": "Do not repeat"
     }, 
     "handleListDone": {
         "group": "Core", 
@@ -99,7 +104,7 @@
         "label": "Behavior after goal list is completed", 
         "tooltip": "Sets how the goal bar behaves after all goals are completed", 
         "type": "dropdown", 
-        "value": "Make Random Goal"
+        "value": "Show Latest Donation or Cheer"
     }, 
     "output_file": "Settings/settings.json"
 }

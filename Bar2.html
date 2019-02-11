@@ -38,7 +38,7 @@
       eventQueue: [],
       eventInterval: false,
       listDoneHandling: 'show_donor',
-      repeatOnMulticlear: false,
+      repeatOnMulticlear: 'Do not repeat',
       wasMulticleared: false,
       serviceUrl: "",
       socket: Object,
@@ -84,13 +84,13 @@
           var overflow = vm.current - vm.goal;
 
           // multiple iterations at once
-          if (vm.repeatOnMulticlear) {
+          if (vm.repeatOnMulticlear === "Repeat and keep" || vm.repeatOnMulticlear === "Repeat and switch") {
             if (overflow > vm.goal) {  // at least cleared twice
               vm.wasMulticleared = true;
               vm.repeatGoal();
               if (!vm.eventInterval) {vm.eventInterval = window.setInterval(vm.processEventQueue, vm.cycleTime * 100);}
               return;
-            } else if (vm.wasMulticleared) {
+            } else if (vm.wasMulticleared && (vm.repeatOnMulticlear === "Repeat and keep")) {
               vm.wasMulticleared = false;
               vm.repeatGoal();
               if (!vm.eventInterval) {vm.eventInterval = window.setInterval(vm.processEventQueue, vm.cycleTime * 100);}
@@ -298,7 +298,7 @@
       }
 
       if (localStorage.getItem('repeatOnMulticlear')) {
-        this.repeatOnMulticlear = localStorage.getItem('repeatOnMulticlear') === 'true';
+        this.repeatOnMulticlear = localStorage.getItem('repeatOnMulticlear');
       }
 
       this.SLSocket.on('event', (eventData) => {
@@ -317,7 +317,7 @@
                 return;
               }
             }
-            
+
             var newEvent = {type: eType, value: eValue, name: eName, isTest: eTest};
             vm.handleEvent(newEvent);
             
@@ -518,7 +518,7 @@
           vm.goalQueue = [];
           vm.history = [];
           vm.listDoneHandling = 'show_donor';
-          vm.repeatOnMulticlear = false;
+          vm.repeatOnMulticlear = 'Do not repeat';
         }
       };
       
