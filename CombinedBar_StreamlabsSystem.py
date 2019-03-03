@@ -5,6 +5,7 @@ import os
 import codecs
 import sys
 import json
+import csv
 sys.path.append(os.path.join(os.path.dirname(__file__), "lib")) #point at lib folder for classes / references
 
 
@@ -15,7 +16,7 @@ ScriptName = "CombinedProgressBar"
 Website = "reecon820@gmail.com"
 Description = "Progress bar for goals that combines streamlabs donations and cheers."
 Creator = "Reecon820"
-Version = "0.5.3.0"
+Version = "0.6.0.0"
 
 
 #---------------------------
@@ -62,6 +63,9 @@ cpbBarHtmlPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "Bar.ht
 
 global cpbBar2HtmlPath
 cpbBar2HtmlPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "Bar2.html"))
+
+global cpbBulkImportFilePath
+cpbBulkImportFilePath = os.path.abspath(os.path.join(os.path.dirname(__file__), "bulk_goals.csv"))
 
 #---------------------------
 #   [Required] Initialize Data (Only called on load)
@@ -161,6 +165,23 @@ def TestDonation():
 
 def ClearData():
     pass
+
+def EditBulkFile():
+    os.startfile(cpbBulkImportFilePath)
+
+def ImportBulkData():
+    try:
+        with codecs.open(cpbBulkImportFilePath, encoding="utf-8-sig", mode="r") as f:
+            # read semicolon separated CSV with format title;current;goal
+            readCSV = csv.reader(f, delimiter=';')
+            bulkJson = []
+            for row in readCSV:
+                goal = {'title': row[0], 'current': float(row[1]), 'goal': float(row[2])}
+                bulkJson.append(goal)
+                
+            Parent.BroadcastWsEvent("EVENT_BULK_GOALS", json.dumps(bulkJson))
+      except Exception as err:
+            Parent.Log(ScriptName, "Error reading bulk file: {0}".format(err))
 
 def updateUi():
     ui = {}

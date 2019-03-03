@@ -56,11 +56,27 @@ You can delete goals by typing the title of the goal you want to delete into the
 
 __Note:__ The checkbox in the `Goal List` section must be active!
 
+### Importing Goals In Bulk From File
+
+If you frequently have to handle many goals, using the previously described method of adding them one by one can get cumbersome pretty quickly. The script folder has a `CSV`-file called `bulk_goals.csv` which can be imported to set up multiple goals at once.
+
+You can open this file in your system's default `CSV`-editor by clicking the `EDIT BULK FILE`-button in the `Util`-section of the script. The bot expects the values to be separated by semicolon `;` and does not expect the file to have a header. Each Line represents one goal in the following format:
+
+```csv
+test goal 1;1;10
+test goal 2;0;234
+test goal 3/3;22.23;100
+```
+
+Click the `IMPORT BULK DATA`-button to import the goals you have configured in the file. 
+
+__Note:__ This will replace all goals currently added to the list!
+
 ## Styling
 
 Based on Bootstrap CSS progress bars, the CSS classes for customization are:
 
-```
+```txt
 progress - the bootstrap progressbar
 progress-bar - the bootstrap progressbar progress
 title - the donation title

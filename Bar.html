@@ -295,7 +295,7 @@
           author: 'Reecon820',
           website: 'reecon820@gmail.com',
           api_key: API_Key,
-          events: ['EVENT_BAR_UPDATE', 'EVENT_CHEER', 'EVENT_DONATION', 'EVENT_CLEAR_DATA']
+          events: ['EVENT_BAR_UPDATE', 'EVENT_CHEER', 'EVENT_DONATION', 'EVENT_CLEAR_DATA', 'EVENT_BULK_GOALS']
         };
         //  Send your Data to the server
         vm.socket.send(JSON.stringify(auth));
@@ -415,6 +415,41 @@
             vm.listDone = true;
             localStorage.setItem('listDone', vm.listDone);
           }
+        } else if (json.event === 'EVENT_BULK_GOALS') {
+          console.log("IMPORTING IN BULK");
+          var data = JSON.parse(json.data);
+          console.log(data);
+          // array with goals
+          vm.goalQueue = [];
+          var first = true;
+          for (newGoal of data) {
+            console.log("new goal", newGoal);
+            if (first) {
+              // make first goal active right away
+              vm.title = newGoal.title;
+              vm.current = parseFloat(newGoal.current);
+              vm.goal = parseFloat(newGoal.goal);
+
+              localStorage.setItem('title', vm.title);
+              localStorage.setItem('goal', vm.goal);
+              localStorage.setItem('current', vm.current);
+
+              vm.previousGoal = {
+                title: vm.title,
+                goal: vm.goal,
+                current: 0
+              };
+              localStorage.setItem('previousGoal', JSON.stringify(vm.previousGoal));
+
+              first = false;
+            } else {
+              // add all other goals to the queue
+              vm.goalQueue.push(newGoal);
+            }
+          }
+          // save queue persitently 
+          localStorage.setItem('goalQueue', JSON.stringify(vm.goalQueue));
+          
         } else if (json.event === 'EVENT_CLEAR_DATA') {
           console.log("CLEARING ALL DATA");
           localStorage.clear();

@@ -11,14 +11,14 @@
         "label": "Update Current Value", 
         "tooltip": "Updates the current value if checked", 
         "type": "checkbox", 
-        "value": false
+        "value": true
     }, 
     "Goal": {
         "group": "Core", 
         "label": "Total Goal", 
         "tooltip": "Donation Goal", 
         "type": "numberbox", 
-        "value": 100
+        "value": 5
     }, 
     "Title": {
         "group": "Core", 
@@ -55,6 +55,22 @@
         "group": "Bar2", 
         "label": "Copy HTML Path", 
         "tooltip": "Copies the path to the html file to the clipboard", 
+        "type": "button", 
+        "wsevent": "EVENT_NONE"
+    }, 
+    "btnEditBulk": {
+        "function": "EditBulkFile", 
+        "group": "Util", 
+        "label": "Edit Bulk File", 
+        "tooltip": "Opens the file for bulk import of donation goals in the system's default editor", 
+        "type": "button", 
+        "wsevent": "EVENT_NONE"
+    }, 
+    "btnImportBulk": {
+        "function": "ImportBulkData", 
+        "group": "Util", 
+        "label": "Import Bulk Data", 
+        "tooltip": "Import the goals from the file and replace all goals in the list", 
         "type": "button", 
         "wsevent": "EVENT_NONE"
     }, 
