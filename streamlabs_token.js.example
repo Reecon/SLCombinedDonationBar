@@ -1,0 +1,3 @@
+// replace the example below with the API access token from streamlabs here if you use Bar2.html
+// you can find this token on streamlabs under 'account' -> 'API Settings' -> 'API Tokens' -> 'Your Socket API Token'
+var SLToken="_SECRET_API_TOKEN_";

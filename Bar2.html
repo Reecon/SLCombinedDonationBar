@@ -4,6 +4,7 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js'></script>
 <script src="API_Key.js"></script>
+<script src="streamlabs_token.js"></script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <body>
   <div id="app">
@@ -43,7 +44,7 @@
       serviceUrl: "",
       socket: Object,
       SLSocket: Object,
-      SLSocketToken: "REPLACE_THIS_WITH_TOKEN",  // <--- Replace with Streamlabs API token ---//
+      SLSocketToken: SLToken
     },
     watch: {
       full: function(newFull, oldFull) {
