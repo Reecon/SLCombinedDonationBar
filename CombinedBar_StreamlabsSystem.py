@@ -180,8 +180,8 @@ def ImportBulkData():
                 bulkJson.append(goal)
                 
             Parent.BroadcastWsEvent("EVENT_BULK_GOALS", json.dumps(bulkJson))
-      except Exception as err:
-            Parent.Log(ScriptName, "Error reading bulk file: {0}".format(err))
+    except Exception as err:
+        Parent.Log(ScriptName, "Error reading bulk file: {0}".format(err))
 
 def updateUi():
     ui = {}
