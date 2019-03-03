@@ -26,8 +26,8 @@
   var vm = new Vue({
     el: '#app',
     data: {
-      goal: 100,
-      current: 100,
+      goal: 1,
+      current: 0,
       title: "Set Up Your Goals!",
       goalQueue: [],
       history: [],
@@ -422,8 +422,8 @@
           vm.repeatOnMulticlear = data.multiClear;
           localStorage.setItem('repeatOnMulticlear', vm.repeatOnMulticlear);
 
+          var first = false;
           if (data.addToList) {
-            var first = false;
             // if this is the first goal sent to the overlay, make it active right away
             if ((!localStorage.getItem('title') && !localStorage.getItem('goal') && !localStorage.getItem('current')) || vm.listDone) {
               vm.title = data.title;
@@ -512,7 +512,7 @@
         } else if (json.event === 'EVENT_CLEAR_DATA') {
           console.log("CLEARING ALL DATA");
           localStorage.clear();
-          vm.goal = 100;
+          vm.goal = 1;
           vm.title = "Set Up Your Goals!";
           vm.current = 0;
           vm.listDone = true;
