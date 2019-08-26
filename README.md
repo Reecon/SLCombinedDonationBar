@@ -7,7 +7,7 @@ Progress bar for goals that combines streamlabs donations and cheers.
 * Download zip
 * Import zip into bot
 * Right-click script and select `Insert API Key`
-* Click the `Copy HTML Path` button and add a local borwser source in your streaming software with this path, or navigate to `C:\Users\[YOUR_USERNAME]\AppData\Roaming\Streamlabs\Streamlabs Chatbot\Services\Scripts\SLCombinedDonationBar\Bar.html`
+* Click the `Copy HTML Path` button and add a local browser source in your streaming software with this path, or navigate to `C:\Users\[YOUR_USERNAME]\AppData\Roaming\Streamlabs\Streamlabs Chatbot\Services\Scripts\SLCombinedDonationBar\Bar.html`
 
 There are two goal bar overlays. The first, `Bar.html` uses the bot's event-system to react to cheers and donations. In order to be able to receive donation events the bot must be connected to Streamlabs with the streamer's account in the `Connections`-panel in lower left corner of the bot-ui.
 
@@ -17,6 +17,8 @@ The second option, `Bar2.html` directly connects to the Streamlabs API. To use t
 * Go to the Streamlabs website and navigate to `API Settings`. Select `API TOKENS` and copy `Your Socket API Token`.
 * In the text editor replace `_SECRET_API_TOKEN_` with your API token.
 * Save the file and edit the path to your browser source so it points to `Bar2.html` instead of `Bar.html`
+
+__Note:__ Make sure the browser source does not get shut down when the scene it is in is inactive. It can not receive events when it is inactive and donations will not be counted towards the goal!
 
 ## Goal List
 
