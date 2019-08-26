@@ -35,6 +35,7 @@
       previousGoal: {},
       eventQueue: [],
       eventInterval: false,
+      switchTimer: false,
       listDoneHandling: 'show_donor',
       repeatOnMulticlear: 'do_not_repeat',
       wasMulticleared: false,
@@ -57,7 +58,7 @@
           this.title = this.lastEvent.name + " completed " + this.title;
 
           // start timer
-          var timer = window.setTimeout(this.switchGoal, this.cycleTime * (1 + (this.goal/500)) * 1000);
+          this.switchTimer = window.setTimeout(this.switchGoal, this.cycleTime * (1 + (this.goal/500)) * 1000);
         }
       }
     },
@@ -452,6 +453,16 @@
           
         } else if (json.event === 'EVENT_CLEAR_DATA') {
           console.log("CLEARING ALL DATA");
+          if (vm.eventInterval) {
+            console.log("clearing timer");
+            window.clearInterval(vm.eventInterval);
+            vm.eventInterval = false;
+          }
+          if (vm.switchTimer) {
+            console.log("clearing switch timer: " + vm.switchTimer);
+            window.clearTimeout(vm.switchTimer);
+            vm.switchTimer = false;
+          }
           localStorage.clear();
           vm.goal = 1;
           vm.title = "Set Up Your Goals!";
@@ -460,6 +471,9 @@
           vm.goalQueue = [];
           vm.listDoneHandling = 'show_donor';
           vm.repeatOnMulticlear = 'Do not repeat';
+          vm.lastEvent = {};
+          vm.previousGoal = {};
+          vm.eventQueue = [];
 
         } else if (json.event === 'EVENT_CHEER') {
           var data = JSON.parse(json.data);
