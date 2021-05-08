@@ -16,7 +16,7 @@ ScriptName = "CombinedProgressBar"
 Website = "reecon820@gmail.com"
 Description = "Progress bar for goals that combines streamlabs donations and cheers."
 Creator = "Reecon820"
-Version = "0.6.0.1"
+Version = "0.6.0.2"
 
 
 #---------------------------
@@ -176,8 +176,10 @@ def ImportBulkData():
             readCSV = csv.reader(f, delimiter=';')
             bulkJson = []
             for row in readCSV:
-                goal = {'title': row[0], 'current': float(row[1]), 'goal': float(row[2])}
-                bulkJson.append(goal)
+                # all three elements have to be present, no more, no less
+                if len(row) == 3: 
+                    goal = {'title': row[0], 'current': float(row[1]), 'goal': float(row[2])}
+                    bulkJson.append(goal)
                 
             Parent.BroadcastWsEvent("EVENT_BULK_GOALS", json.dumps(bulkJson))
     except Exception as err:
